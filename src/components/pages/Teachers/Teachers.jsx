@@ -33,6 +33,10 @@ import {
   Label,
 } from "../../common";
 import { TeacherModal } from "./TeacherModal";
+import { FaPen } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import { IoRefreshCircle } from "react-icons/io5";
+import { MdAssignmentAdd } from "react-icons/md";
 
 const Teachers = () => {
   const [teachers, setTeachers] = useState([]);
@@ -78,7 +82,7 @@ const Teachers = () => {
             .includes(searchTerm.toLowerCase()) ||
           teacher.specialization
             ?.toLowerCase()
-            .includes(searchTerm.toLowerCase())
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -86,7 +90,7 @@ const Teachers = () => {
       filtered = filtered.filter((teacher) =>
         teacher.specialization
           ?.toLowerCase()
-          .includes(specializationFilter.toLowerCase())
+          .includes(specializationFilter.toLowerCase()),
       );
     }
 
@@ -224,19 +228,6 @@ const Teachers = () => {
                     : "N/A"}
                 </DetailValue>
               </DetailItem>
-              <DetailItem>
-                <DetailLabel>Status</DetailLabel>
-                <DetailValue>
-                  <span
-                    style={{
-                      color: teacher.user?.is_active ? "#10b981" : "#ef4444",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {teacher.user?.is_active ? "Active" : "Inactive"}
-                  </span>
-                </DetailValue>
-              </DetailItem>
             </TeacherDetails>
 
             <SubjectsList>
@@ -252,7 +243,7 @@ const Teachers = () => {
                 onClick={() => handleEditTeacher(teacher)}
                 title="Edit teacher"
               >
-                ✏️
+                <FaPen />
               </IconButton>
               <IconButton
                 size="sm"
@@ -261,7 +252,7 @@ const Teachers = () => {
                 }}
                 title="View details"
               >
-                👁️
+                <FaEye />
               </IconButton>
               <IconButton
                 size="sm"
@@ -270,7 +261,7 @@ const Teachers = () => {
                 }}
                 title="Assign subjects"
               >
-                📚
+                <MdAssignmentAdd />
               </IconButton>
             </CardActions>
           </TeacherCard>

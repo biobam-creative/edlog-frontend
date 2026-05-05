@@ -10,11 +10,18 @@ export const Header = styled.header`
   top: 0;
   z-index: 100;
   width: 100vw;
+
+  @media print {
+    display: none;
+  }
 `;
 
 export const HeaderContent = styled(FlexContainer)`
-  padding: ${(props) => props.theme.spacing.md} 0;
+  padding: 0;
   justify-content: space-between;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    flex-direction: row;
+  }
 `;
 
 export const Logo = styled.div`

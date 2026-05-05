@@ -15,6 +15,11 @@ export const HeroSection = styled.section`
   // justify-content: flex-start;
   position: relative;
   overflow: hidden;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 0;
+    width: 100vw;
+    padding-top: 50px;
+  }
 `;
 
 export const HeroBackground = styled.div`
@@ -71,6 +76,9 @@ export const HeroImage = styled.div`
   max-width: 500px;
   margin-top: ${(props) => props.theme.spacing.xl};
   border-radius: ${(props) => props.theme.borderRadius.lg};
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    width: 100%;
+  }
 `;
 
 export const CTAButtons = styled.div`
@@ -100,7 +108,7 @@ export const FeatureCard = styled.div`
   padding: ${(props) => props.theme.spacing.xl};
   background: ${(props) => props.theme.colors.surface};
   border-radius: ${(props) => props.theme.borderRadius.xl};
-  box-shadow: ${(props) => props.theme.shadows.lg};
+  border: 1px solid ${(props) => props.theme.colors.border};
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
@@ -115,17 +123,13 @@ export const FeatureIcon = styled.div`
   width: 80px;
   height: 80px;
   margin: 0 auto ${(props) => props.theme.spacing.lg};
-  background: linear-gradient(
-    135deg,
-    ${(props) => props.theme.colors.primary},
-    ${(props) => props.theme.colors.primaryDark}
-  );
+  color: ${(props) => props.theme.colors.teal};
+  background-color: rgba(0, 128, 128, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  color: ${(props) => props.theme.colors.text.inverse};
 `;
 
 export const FeatureTitle = styled.h3`
@@ -276,7 +280,7 @@ export const Navbar = styled.nav`
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   z-index: 1000;
-  padding: ${(props) => props.theme.spacing.md} 0;
+  padding: 0;
 `;
 
 export const NavContent = styled.div`

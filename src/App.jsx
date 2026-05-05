@@ -16,9 +16,18 @@ import Assignments from "./components/pages/Assignments/Assignments";
 import Finance from "./components/pages/Finance/Finance";
 import Reports from "./components/pages/Reports/Reports";
 import School from "./components/pages/School/School";
+import Signup from "./components/pages/School/Signup";
 import SubjectScoresInput from "./components/pages/Results/SubjectScoreInput";
 import ReportPortal from "./components/pages/ReportCard/ReportPortal";
 import PerformanceInput from "./components/pages/ReportCard/PerformanceInput";
+import AcademicYears from "./components/pages/Academics/AcademicYears";
+import Terms from "./components/pages/Academics/Terms";
+import Grades from "./components/pages/Academics/Grades";
+import Subjects from "./components/pages/Academics/Subjects";
+import StudentAssignmentView from "./components/pages/Assignments/StudentAssignmentView";
+import StudentAssignmentList from "./components/pages/Assignments/StudentAssignmentList";
+import BulkReportCardGenerate from "./components/pages/ReportCard/BulkReportCardGenerate";
+import ReportVerify from "./components/pages/ReportCard/ReportVerify";
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -27,19 +36,34 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="verify-result/:id" element={<ReportVerify />} />
             <Route path="/app" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
               <Route path="attendance" element={<Attendance />} />
               <Route path="assignments" element={<Assignments />} />
+              <Route
+                path="student-assignment"
+                element={<StudentAssignmentView />}
+              />
+              <Route
+                path="assignment-submissions"
+                element={<StudentAssignmentList />}
+              />
               <Route path="finance" element={<Finance />} />
               <Route path="reports" element={<Reports />} />
               <Route path="schools" element={<School />} />
               <Route path="score-upload" element={<SubjectScoresInput />} />
               <Route path="report-card" element={<ReportPortal />} />
               <Route path="performance-input" element={<PerformanceInput />} />
+              <Route path="academic-years" element={<AcademicYears />} />
+              <Route path="terms" element={<Terms />} />
+              <Route path="grades" element={<Grades />} />
+              <Route path="subjects" element={<Subjects />} />
+              <Route path="bulk-report" element={<BulkReportCardGenerate />} />
             </Route>
           </Routes>
         </Router>

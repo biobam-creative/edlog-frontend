@@ -70,6 +70,17 @@ class ScoreService {
     }
   }
 
+  async bulkReportCardGeneration(grade, term) {
+    try {
+      const response = await api.get(
+        `/reports/bulk_report_pdf/${grade}/${term}/`,
+      );
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async fetchReportCard(studentId, term) {
     try {
       const response = await api.get(`/reports/report/${studentId}/${term}/`);
@@ -79,11 +90,32 @@ class ScoreService {
     }
   }
 
+  async verifyResult(id) {
+    try {
+      const response = await api.get(`/reports/verify/${id}/`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async fetchReportCardStaffView(studentId, term) {
+    try {
+      const response = await api.get(
+        `/reports/report/staff_view/${studentId}/${term}/`,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async updateOrCreateReport(studentId, term, performanceData) {
+    console.log(performanceData);
     try {
       // use PATCH for partial updates (frontend sends partial performance object)
       const response = await api.patch(
-        `/reports/api/input/performance/${studentId}/${term}/`,
+        `/reports/performance/create/${studentId}/${term}/`,
         performanceData,
       );
       return response.data;

@@ -3,7 +3,7 @@ import axios from "axios";
 // import jwtDecode from "jwt-decode";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "http://10.249.111.57:8000/api",
   timeout: 40000,
   headers: {
     Authorization: localStorage.getItem("access_token")
@@ -25,9 +25,18 @@ api.interceptors.response.use(
       error.response.status < 500;
 
     if (!expectedError) {
-      consloe.error("An unexpected error occurred.");
+      console.error(error);
       return Promise.reject(error);
     }
+
+    if (expectedError) {
+      // console.log("error:", error);
+    }
+    // console.log(isTokenNotValidError(error));
+    // if (noAuthenticationCredential) {
+    //   // window.location.href = "/login";
+    //   return Promise.reject(error);
+    // }
 
     if (isTokenRefreshError(error, originalRequest)) {
       console.error("Token refresh error:", error.response);
@@ -35,20 +44,33 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (isUnauthorizedError(error) || isTokenNotValidError(error)) {
+    if (isTokenNotValidError(error)) {
+      console.log("access token not valid");
       return handleTokenRefresh(originalRequest);
     }
 
+    // if (isUnauthorizedError(error) || isTokenNotValidError(error)) {
+    //   console.log("token error");
+    //
+    // }
+
     return Promise.reject(error);
-  }
+  },
 );
+
+function noAuthenticationCredential(error) {
+  return (
+    error.response.data.details ===
+    "Authentication credentials were not provided."
+  );
+}
 
 function isTokenRefreshError(error, originalRequest) {
   return (
     error.response.data.code !== "token_not_valid" &&
     error.response.status === 401 &&
     error.response.statusText === "Unauthorized" &&
-    originalRequest.url === config.apiUrl + "token/refresh/"
+    originalRequest.url === api.baseURL + "token/refresh/"
   );
 }
 
@@ -70,20 +92,26 @@ function isTokenNotValidError(error) {
 
 async function handleTokenRefresh(originalRequest) {
   const refreshToken = localStorage.getItem("refresh_token");
+  console.log(originalRequest.baseURL);
   if (refreshToken) {
     const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]));
     const now = Math.ceil(Date.now() / 1000);
 
     if (tokenParts.exp > now) {
+      console.log(`${originalRequest.baseURL}/token/refresh/`);
       try {
-        const response = await axios.post(`${config.apiUrl}/token/refresh/`, {
-          refresh: refreshToken,
-        });
+        const response = await axios.post(
+          `${originalRequest.baseURL}/token/refresh/`,
+          {
+            refresh: refreshToken,
+          },
+        );
+
+        console.log(response);
         localStorage.setItem("access_token", response.data.access);
         localStorage.setItem("refresh_token", response.data.refresh);
 
-        httpHeader.defaults.headers["Authorization"] =
-          "JWT " + response.data.access;
+        api.defaults.headers["Authorization"] = "JWT " + response.data.access;
         originalRequest.headers["Authorization"] =
           "JWT " + response.data.access;
 

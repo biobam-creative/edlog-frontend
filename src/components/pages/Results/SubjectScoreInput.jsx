@@ -90,9 +90,7 @@ const SubjectScoresInput = () => {
 
   const fetchSubjects = async (classId) => {
     try {
-      const response = await academicsService.getSubjects({
-        grade_id: classId,
-      });
+      const response = await academicsService.getSubjectsByGrade(classId);
       setSubjects(response);
     } catch (error) {
       console.error("Failed to fetch subjects:", error);
@@ -139,16 +137,26 @@ const SubjectScoresInput = () => {
 
     // Validate numeric input
     if (
-      ["ca1_score", "ca2_score", "exam_score", "class_position"].includes(field)
+      [
+        "ca1_score",
+        "ca2_score",
+        "ca3_score",
+        "exam_score",
+        "class_position",
+      ].includes(field)
     ) {
       if (value === "" || /^\d+$/.test(value)) {
         const numValue = value === "" ? "" : parseInt(value);
 
         // Validate score limits
-        if (field === "ca1_score" || field === "ca2_score") {
-          if (numValue > 20) return;
+        if (
+          field === "ca1_score" ||
+          field === "ca2_score" ||
+          field === "ca3_score"
+        ) {
+          if (numValue > 10) return;
         } else if (field === "exam_score") {
-          if (numValue > 60) return;
+          if (numValue > 70) return;
         }
 
         newScores[index][field] = numValue;

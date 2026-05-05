@@ -30,6 +30,11 @@ class AssignmentsService {
       const response = await api.post(
         "/assignments/assignments/",
         assignmentData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
       return response.data;
     } catch (error) {
@@ -60,8 +65,8 @@ class AssignmentsService {
     }
   }
 
-  // Student Assignments
-  async getStudentAssignments(assignmentId) {
+  // Student Assignments / Submissions
+  async getAssignmentSubmissions(assignmentId) {
     try {
       const response = await api.get(
         `/assignments/assignments/${assignmentId}/submissions/`,
@@ -72,11 +77,28 @@ class AssignmentsService {
     }
   }
 
+  async getStudentSubmission(assignmentId) {
+    try {
+      const response = await api.get(
+        `/assignments/assignments/${assignmentId}/submit/`,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async submitAssignment(assignmentId, submissionData) {
     try {
+      // submissionData should be FormData for file uploads
       const response = await api.post(
-        `/assignments/assignments/${assignmentId}/submissions/`,
+        `/assignments/assignments/${assignmentId}/submit/`,
         submissionData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
       return response.data;
     } catch (error) {
@@ -85,6 +107,17 @@ class AssignmentsService {
   }
 
   // Grading
+  async getSubmissionGrade(studentAssignmentId) {
+    try {
+      const response = await api.get(
+        `/assignments/student-assignments/${studentAssignmentId}/grade/`,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async gradeAssignment(studentAssignmentId, gradeData) {
     try {
       const response = await api.post(

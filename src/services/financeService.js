@@ -99,6 +99,25 @@ class FinanceService {
     }
   }
 
+  // Public signup: create school + admin and initiate signup payment
+  async initiateSchoolSignup(payload) {
+    try {
+      const response = await api.post(`/schools/signup/`, payload);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async initiateStudentSubscription(studentId, payload) {
+    try {
+      const response = await api.post(`/students/${studentId}/subscribe/`, payload);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async verifyWalletPurchase(reference) {
     try {
       const response = await api.get(`/finance/paystack/verify/${reference}/`);

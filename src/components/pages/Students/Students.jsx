@@ -31,6 +31,9 @@ import {
   Label,
 } from "../../common";
 import { StudentModal } from "../../Students/StudentModal";
+import { FaPen } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import { IoRefreshCircle } from "react-icons/io5";
 
 const Students = () => {
   const [students, setStudents] = useState([]);
@@ -42,10 +45,17 @@ const Students = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [grades, setGrades] = useState([]);
+  const [terms, setTerms] = useState([]);
+  const [selectedTerm, setSelectedTerm] = useState("");
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkGrade, setBulkGrade] = useState("");
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkError, setBulkError] = useState("");
 
   useEffect(() => {
     fetchStudents();
     fetchGrades();
+    fetchTerms();
   }, []);
 
   useEffect(() => {
@@ -74,6 +84,15 @@ const Students = () => {
       setGrades(grades);
     } catch (error) {
       console.error("Error fetching grades:", error);
+    }
+  };
+
+  const fetchTerms = async () => {
+    try {
+      const t = await academicsService.getTerms();
+      setTerms(t);
+    } catch (error) {
+      console.error("Error fetching terms:", error);
     }
   };
 
@@ -168,6 +187,9 @@ const Students = () => {
           <Button variant="primary" onClick={handleCreateStudent}>
             Add New Student
           </Button>
+          <Button variant="secondary" onClick={() => setShowBulkModal(true)}>
+            Bulk Subscribe
+          </Button>
         </PageActions>
       </PageHeader>
 
@@ -179,12 +201,26 @@ const Students = () => {
           onChange={handleSearchChange}
         />
         <FormGroup style={{ minWidth: "200px", margin: 0 }}>
-          <Label>Filter by Grade</Label>
+          <Label>Filter by Class</Label>
           <Select value={gradeFilter} onChange={handleGradeFilterChange}>
-            <option value="">All Grades</option>
+            <option value="">All Classes</option>
             {grades.map((grade) => (
               <option key={grade.id} value={grade.id}>
                 {grade.name}
+              </option>
+            ))}
+          </Select>
+        </FormGroup>
+        <FormGroup style={{ minWidth: "200px", margin: 0, marginLeft: 8 }}>
+          <Label>Term</Label>
+          <Select
+            value={selectedTerm}
+            onChange={(e) => setSelectedTerm(e.target.value)}
+          >
+            <option value="">Select Term</option>
+            {terms.map((term) => (
+              <option key={term.id} value={term.id}>
+                {term.name}
               </option>
             ))}
           </Select>
@@ -242,7 +278,33 @@ const Students = () => {
                 onClick={() => handleEditStudent(student)}
                 title="Edit student"
               >
-                ✏️
+                <FaPen />
+              </IconButton>
+              <IconButton
+                size="sm"
+                onClick={async () => {
+                  if (!selectedTerm) {
+                    alert("Select a term first");
+                    return;
+                  }
+                  try {
+                    await studentsService.renewSubscription(
+                      student.id,
+                      selectedTerm,
+                    );
+                    alert("Subscription renewed");
+                    fetchStudents();
+                  } catch (err) {
+                    console.error(err);
+                    alert(
+                      "Failed to renew subscription: " +
+                        (err.error || JSON.stringify(err)),
+                    );
+                  }
+                }}
+                title="Renew subscription"
+              >
+                <IoRefreshCircle />
               </IconButton>
               <IconButton
                 size="sm"
@@ -251,7 +313,7 @@ const Students = () => {
                 }}
                 title="View details"
               >
-                👁️
+                <FaEye />
               </IconButton>
             </CardActions>
           </StudentCard>
@@ -278,6 +340,98 @@ const Students = () => {
         student={selectedStudent}
         grades={grades}
       />
+      {showBulkModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: 20,
+              width: 400,
+              borderRadius: 8,
+            }}
+          >
+            <h3>Bulk Subscribe</h3>
+            {bulkError && <div style={{ color: "red" }}>{bulkError}</div>}
+            <div style={{ marginBottom: 8 }}>
+              <Label>Grade</Label>
+              <Select
+                value={bulkGrade}
+                onChange={(e) => setBulkGrade(e.target.value)}
+              >
+                <option value="">All Grades</option>
+                {grades.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <Label>Term</Label>
+              <Select
+                value={selectedTerm}
+                onChange={(e) => setSelectedTerm(e.target.value)}
+              >
+                <option value="">Select Term</option>
+                {terms.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div
+              style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+            >
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowBulkModal(false);
+                  setBulkError("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={async () => {
+                  if (!selectedTerm) {
+                    setBulkError("Select a term");
+                    return;
+                  }
+                  setBulkLoading(true);
+                  setBulkError("");
+                  try {
+                    const payload = {
+                      grade_id: bulkGrade || null,
+                      term_id: selectedTerm,
+                    };
+                    await studentsService.bulkRenewSubscriptions(payload);
+                    alert("Bulk subscription completed");
+                    setShowBulkModal(false);
+                    fetchStudents();
+                  } catch (err) {
+                    console.error(err);
+                    setBulkError(err.error || "Failed");
+                  }
+                  setBulkLoading(false);
+                }}
+              >
+                {bulkLoading ? "Processing..." : "Subscribe"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
   );
 };

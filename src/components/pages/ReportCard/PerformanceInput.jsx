@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import * as SC from "../../common/InputStyledComponents";
+import { ScoresTable } from "./ReportCard.styles";
 import {
   academicsService,
   studentsService,
@@ -20,23 +21,10 @@ const PerformanceInput = () => {
 
   // Skill and behaviour options
   const skillOptions = [
-    { label: "FLUENCY", value: "Fluency" },
-    { label: "GAMES", value: "Games" },
     { label: "MUSICAL_SKILLS", value: "Musical Skills" },
     { label: "ARTISTIC_SKILLS", value: "Artistic Skills" },
-    { label: "SPORTS", value: "Sports" },
+    { label: "SPORT", value: "Sport" },
     { label: "LEADERSHIP", value: "Leadership" },
-  ];
-
-  const behaviourOptions = [
-    { label: "PUNCTUALITY", value: "Punctuality" },
-    { label: "NEATNESS", value: "Neatness" },
-    { label: "POLITENESS", value: "Politeness" },
-    { label: "SELF_CONTROL", value: "Self Control" },
-    { label: "HONESTY", value: "Honesty" },
-    { label: "RESPONSIBILITY", value: "Responsibility" },
-    { label: "TEAMWORK", value: "Teamwork" },
-    { label: "RESPECT", value: "Respect" },
   ];
 
   useEffect(() => {
@@ -90,22 +78,11 @@ const PerformanceInput = () => {
 
   const fetchPerformance = async () => {
     try {
-      console.log(selectedStudent, selectedTerm);
-      const response = await reportService.fetchReportCard(
+      const response = await reportService.fetchReportCardStaffView(
         selectedStudent,
         selectedTerm,
       );
-      console.log("Fetched performance:", response);
       setPerformance(response);
-      if (response.behaviour_ratings.length === 0) {
-        setPerformance((prev) => ({
-          ...prev,
-          behaviour_ratings: behaviourOptions.map((behaviour) => ({
-            behaviour: behaviour.value,
-            rating: 3,
-          })),
-        }));
-      }
       if (response.skill_ratings.length === 0) {
         setPerformance((prev) => ({
           ...prev,
@@ -121,22 +98,10 @@ const PerformanceInput = () => {
       setPerformance({
         student: selectedStudent,
         term: selectedTerm,
-        age: "",
-        class_age_average: "",
-        number_in_class: "",
-        times_school_opened: "",
-        times_present: "",
-        subjects_offered: "",
-        marks_obtained: "",
-        marks_obtainable: "",
         class_teacher_remark: "",
         headmaster_remark: "",
         skill_ratings: skillOptions.map((skill) => ({
           skill: skill.value,
-          rating: 3,
-        })),
-        behaviour_ratings: behaviourOptions.map((behaviour) => ({
-          behaviour: behaviour.value,
           rating: 3,
         })),
       });
@@ -170,6 +135,8 @@ const PerformanceInput = () => {
 
   const handleSavePerformance = async () => {
     if (!performance) return;
+
+    console.log(performance);
 
     setLoading(true);
     setAlert(null);
@@ -245,7 +212,7 @@ const PerformanceInput = () => {
               <option value="">Choose a term</option>
               {terms.map((term) => (
                 <option key={term.id} value={term.id}>
-                  {term.name} -
+                  {term.name} - {term.academic_year.name}
                 </option>
               ))}
             </SC.FormSelect>
@@ -263,7 +230,7 @@ const PerformanceInput = () => {
             >
               <option value="">Choose a student</option>
               {students.map((student) => (
-                <option key={student.id} value={student.user.id}>
+                <option key={student.id} value={student.id}>
                   {student.user.last_name} {student.user.first_name} (
                   {student.student_id})
                 </option>
@@ -275,114 +242,29 @@ const PerformanceInput = () => {
         {performance && selectedStudent && selectedTerm && (
           <>
             <div style={{ margin: "30px 0" }}>
-              <h3>Performance Details for {selectedStudentName}</h3>
+              <h3>Subject Score Details for {performance.student_name}</h3>
+              <ScoresTable>
+                <thead>
+                  <th>Subject</th>
+                  <th>Total Score</th>
+                </thead>
+                <tbody>
+                  {performance.subject_scores &&
+                    performance.subject_scores.map((score, index) => (
+                      <tr key={index}>
+                        <td>{score.subject_details.name}</td>
+                        <td>
+                          <strong>{score.term_total}</strong>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </ScoresTable>
+            </div>
+            <div style={{ margin: "30px 0" }}>
+              <h3>Performance Details for {performance.student_name}</h3>
               <p>Complete the performance details below:</p>
             </div>
-
-            <SC.FormGrid>
-              <SC.FormGroup>
-                <SC.FormLabel>Age</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={performance.age || ""}
-                  onChange={(e) => handleInputChange("age", e.target.value)}
-                />
-              </SC.FormGroup>
-
-              <SC.FormGroup>
-                <SC.FormLabel>Class Age Average</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="20"
-                  value={performance.class_age_average || ""}
-                  onChange={(e) =>
-                    handleInputChange("class_age_average", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-
-              <SC.FormGroup>
-                <SC.FormLabel>Number in Class</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={performance.number_in_class || ""}
-                  onChange={(e) =>
-                    handleInputChange("number_in_class", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-            </SC.FormGrid>
-
-            <SC.FormGrid>
-              <SC.FormGroup>
-                <SC.FormLabel>Times School Opened</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="1"
-                  value={performance.times_school_opened || ""}
-                  onChange={(e) =>
-                    handleInputChange("times_school_opened", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-
-              <SC.FormGroup>
-                <SC.FormLabel>Times Present</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="0"
-                  value={performance.times_present || ""}
-                  onChange={(e) =>
-                    handleInputChange("times_present", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-
-              <SC.FormGroup>
-                <SC.FormLabel>Subjects Offered</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={performance.subjects_offered || ""}
-                  onChange={(e) =>
-                    handleInputChange("subjects_offered", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-            </SC.FormGrid>
-
-            <SC.FormGrid>
-              <SC.FormGroup>
-                <SC.FormLabel>Marks Obtained</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="0"
-                  value={performance.marks_obtained || ""}
-                  onChange={(e) =>
-                    handleInputChange("marks_obtained", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-
-              <SC.FormGroup>
-                <SC.FormLabel>Marks Obtainable</SC.FormLabel>
-                <SC.FormInput
-                  type="number"
-                  min="0"
-                  value={performance.marks_obtainable || ""}
-                  onChange={(e) =>
-                    handleInputChange("marks_obtainable", e.target.value)
-                  }
-                />
-              </SC.FormGroup>
-            </SC.FormGrid>
 
             <SC.FormGroup>
               <SC.FormLabel>Class Teacher's Remark</SC.FormLabel>
@@ -462,7 +344,7 @@ const PerformanceInput = () => {
               </div>
             </div>
 
-            <div style={{ margin: "30px 0" }}>
+            {/* <div style={{ margin: "30px 0" }}>
               <h4>Behaviour Rating (1-5)</h4>
               <div
                 style={{
@@ -517,7 +399,7 @@ const PerformanceInput = () => {
                     );
                   })}
               </div>
-            </div>
+            </div> */}
 
             <SC.ActionButtons>
               <SC.FormButton

@@ -23,6 +23,15 @@ class StudentsService {
     }
   }
 
+  async getStudentByUserId(UserID) {
+    try {
+      const response = await api.get(`/students/students/by_id/${UserID}/`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async createStudent(studentData) {
     try {
       const response = await api.post("/students/students/", studentData);
@@ -65,10 +74,41 @@ class StudentsService {
     }
   }
 
+  async renewSubscription(studentId, termId) {
+    try {
+      const response = await api.post(
+        `/students/students/${studentId}/renew/`,
+        { term_id: termId },
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async bulkRenewSubscriptions(payload) {
+    try {
+      const response = await api.post(`/students/bulk-subscribe/`, payload);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // Parents
   async getParents() {
     try {
       const response = await api.get("/students/parents/");
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async getParentWards() {
+    try {
+      const response = await api.get(`/students/students/parent_students/`);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       throw this.handleError(error);

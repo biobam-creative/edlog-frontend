@@ -46,14 +46,10 @@ export const InvoiceModal = ({
   const [loading, setLoading] = useState(false);
   const [feeStructure, setFeeStructure] = useState(null);
 
-  // Mock academic years - in real app, this would come from API
-  // const academicYears = [
-  //   { id: "2023-2024", name: "2023-2024" },
-  //   { id: "2024-2025", name: "2024-2025" },
-  //   { id: "2025-2026", name: "2025-2026" },
-  // ];
+  console.log(students)
 
   useEffect(() => {
+    
     if (invoice) {
       setFormData({
         student: invoice.student?.id || invoice.student || "",
@@ -211,6 +207,8 @@ export const InvoiceModal = ({
       return;
     }
 
+    console.log(formData)
+
     setLoading(true);
     try {
       const invoiceData = {
@@ -245,10 +243,10 @@ export const InvoiceModal = ({
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "NGN",
     }).format(amount);
   };
-
+console.log(students)
   if (!isOpen) return null;
 
   const totalAmount = calculateTotal();

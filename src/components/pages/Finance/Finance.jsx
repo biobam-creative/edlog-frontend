@@ -36,6 +36,9 @@ import {
 } from "../../common";
 import { InvoiceModal } from "./InvoiceModal";
 import RechargeModal from "./RechargeModal";
+import { FaPen } from "react-icons/fa6";
+import { FaEye } from "react-icons/fa";
+import { IoCheckmark } from "react-icons/io5";
 
 const Finance = () => {
   const [invoices, setInvoices] = useState([]);
@@ -58,6 +61,7 @@ const Finance = () => {
   const [userId, setUserId] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [walletLoading, setWalletLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchInvoices();
@@ -69,7 +73,10 @@ const Finance = () => {
     // Try to read school id from local storage user object
     try {
       const user = JSON.parse(localStorage.getItem("user") || "null");
-      if (user) setUserId(user.id);
+      if (user) {
+        setUser(user);
+        setUserId(user.id);
+      }
     } catch (e) {
       // ignore
     }
@@ -171,6 +178,9 @@ const Finance = () => {
   };
 
   const handleEditInvoice = (invoice) => {
+    if (user?.user_type !== "admin") {
+      return;
+    }
     setSelectedInvoice(invoice);
     setIsModalOpen(true);
   };
@@ -181,6 +191,9 @@ const Finance = () => {
   };
 
   const handleInvoiceSave = async (invoiceData) => {
+    if (user?.user_type !== "admin") {
+      return;
+    }
     try {
       if (selectedInvoice) {
         // Update invoice logic
@@ -197,6 +210,9 @@ const Finance = () => {
   };
 
   const handleMarkAsPaid = async (invoiceId) => {
+    if (user?.user_type !== "admin") {
+      return;
+    }
     try {
       // Mock payment - in real app, this would integrate with payment gateway
       await financeService.makePayment(invoiceId, {
@@ -214,7 +230,7 @@ const Finance = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "NGN",
     }).format(amount);
   };
 
@@ -228,28 +244,46 @@ const Finance = () => {
 
   return (
     <PageContainer>
-      <PageHeader>
-        <div>
-          <Heading1>Finance Management</Heading1>
-          <p style={{ color: "#64748b", marginTop: "0.5rem" }}>
-            Manage student fees, invoices, and payments
-          </p>
-        </div>
-        <Button variant="primary" onClick={handleCreateInvoice}>
-          Create Invoice
-        </Button>
-        <Button
-          style={{ marginLeft: 12 }}
-          onClick={() => setIsRechargeOpen(true)}
-        >
-          Recharge Wallet
-        </Button>
-      </PageHeader>
+      {user?.user_type === "admin" ? (
+        <PageHeader>
+          <div>
+            <Heading1>Finance Management</Heading1>
+            <p style={{ color: "#64748b", marginTop: "0.5rem" }}>
+              Manage student fees, invoices, and payments
+            </p>
+          </div>
+          <>
+            <Button variant="primary" onClick={handleCreateInvoice}>
+              Create Invoice
+            </Button>
+            <Button
+              style={{ marginLeft: 12 }}
+              onClick={() => setIsRechargeOpen(true)}
+            >
+              Recharge Wallet
+            </Button>
+          </>
+        </PageHeader>
+      ) : (
+        <PageHeader>
+          <div>
+            <Heading1>Finance Management</Heading1>
+            <p style={{ color: "#64748b", marginTop: "0.5rem" }}>
+              Manage your fees here
+            </p>
+          </div>
+          <>
+            <Button variant="primary" onClick={handleCreateInvoice}>
+              Pay
+            </Button>
+          </>
+        </PageHeader>
+      )}
 
       {wallet && (
         <div
           style={{
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            backgroundColor: "#1a2b4c",
             color: "white",
             padding: "20px",
             borderRadius: "8px",
@@ -445,31 +479,44 @@ const Finance = () => {
                 </StatusBadge>
               </div>
               <ActionButtons>
+                {user?.user_type === "admin" ? (
+                  <IconButton
+                    size="lg"
+                    onClick={() => handleEditInvoice(invoice)}
+                    title="Edit invoice"
+                  >
+                    <FaPen />
+                  </IconButton>
+                ) : (
+                  ""
+                )}
                 <IconButton
-                  size="sm"
-                  onClick={() => handleEditInvoice(invoice)}
-                  title="Edit invoice"
-                >
-                  ✏️
-                </IconButton>
-                <IconButton
-                  size="sm"
+                  size="lg"
                   onClick={() => {
                     /* View details */
                   }}
                   title="View details"
                 >
-                  👁️
+                  <FaEye />
                 </IconButton>
-                {invoice.status === "pending" && (
-                  <IconButton
-                    size="sm"
-                    onClick={() => handleMarkAsPaid(invoice.id)}
-                    title="Mark as paid"
-                  >
-                    ✅
-                  </IconButton>
-                )}
+                {invoice.status === "pending" &&
+                  (user?.user_type === "admin" ? (
+                    <IconButton
+                      size="lg"
+                      onClick={() => handleMarkAsPaid(invoice.id)}
+                      title="Mark as paid"
+                    >
+                      <IoCheckmark />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      size="lg"
+                      onClick={() => handleMarkAsPaid(invoice.id)}
+                      title="Pay"
+                    >
+                      <IoCheckmark />
+                    </IconButton>
+                  ))}
               </ActionButtons>
             </InvoiceRow>
           ))}

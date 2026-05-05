@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { QRCodeSVG } from "qrcode.react";
 import * as SC from "./ReportCard.styles";
+import { studentsService } from "../../../services";
 import { reportService } from "../../../services";
 import { useAuth } from "../../../contexts/AuthContext";
+import edlogLogo from "../../../assets/edlog logo color.png";
 
 const ReportCard = ({ studentId, term }) => {
   const [reportData, setReportData] = useState(null);
+  const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sendingEmail, setSendingEmail] = useState(false);
@@ -17,20 +21,22 @@ const ReportCard = ({ studentId, term }) => {
   }, [studentId, term]);
 
   const fetchReportCard = async () => {
-    try {
-      setLoading(true);
+    if (term && studentId) {
+      try {
+        setLoading(true);
 
-      const response = await reportService.fetchReportCard(studentId, term);
-      setReportData(response);
-      console.log(response);
-      setError(null);
-    } catch (err) {
-      setError(
-        "Failed to load report card. Please check your connection and try again.",
-      );
-      console.error(err);
-    } finally {
-      setLoading(false);
+        const response = await reportService.fetchReportCard(studentId, term);
+        setReportData(response);
+        console.log(response);
+        setError(null);
+      } catch (err) {
+        setError(
+          "Failed to load report card. Please check your connection and try again.",
+        );
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -137,10 +143,16 @@ const ReportCard = ({ studentId, term }) => {
       {/* Header with Action Buttons */}
       <SC.ReportHeader>
         <SC.PrintButton onClick={handlePrint}>Print Report</SC.PrintButton>
-
-        <SC.SchoolName>{reportData.school_name}</SC.SchoolName>
-        <p>{reportData.school_address}</p>
-        <SC.ReportTitle>STUDENT REPORT SHEET</SC.ReportTitle>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <SC.SchoolLogo
+            src={`http://10.249.111.57:8000/media/${reportData.school_logo}`}
+          />
+          <div>
+            <SC.SchoolName>{reportData.school_name}</SC.SchoolName>
+            <p>{reportData.school_address}</p>
+            <SC.ReportTitle>STUDENT REPORT SHEET</SC.ReportTitle>
+          </div>
+        </div>
       </SC.ReportHeader>
 
       {/* Email Notification Section */}
@@ -200,24 +212,18 @@ const ReportCard = ({ studentId, term }) => {
             <SC.InfoValue>{reportData.year}</SC.InfoValue>
           </SC.InfoItem>
           <SC.InfoItem>
-            <SC.InfoLabel>AGE</SC.InfoLabel>
-            <SC.InfoValue>{reportData.age}</SC.InfoValue>
-          </SC.InfoItem>
-          <SC.InfoItem>
-            <SC.InfoLabel>CLASS AGE AVERAGE</SC.InfoLabel>
-            <SC.InfoValue>{reportData.class_age_average}</SC.InfoValue>
-          </SC.InfoItem>
-          <SC.InfoItem>
             <SC.InfoLabel>NO. IN CLASS</SC.InfoLabel>
-            <SC.InfoValue>{reportData.number_in_class}</SC.InfoValue>
+            <SC.InfoValue>
+              {reportData.subject_scores[0].grade.student_count}
+            </SC.InfoValue>
           </SC.InfoItem>
           <SC.InfoItem>
             <SC.InfoLabel>TIMES SCHOOL OPENED</SC.InfoLabel>
             <SC.InfoValue>{reportData.times_school_opened}</SC.InfoValue>
           </SC.InfoItem>
           <SC.InfoItem highlight>
-            <SC.InfoLabel>% TIMES PRESENT</SC.InfoLabel>
-            <SC.InfoValue>{reportData.percentage_present}%</SC.InfoValue>
+            <SC.InfoLabel>TIMES PRESENT</SC.InfoLabel>
+            <SC.InfoValue>{reportData.times_present}</SC.InfoValue>
           </SC.InfoItem>
         </SC.InfoGrid>
       </div>
@@ -235,8 +241,6 @@ const ReportCard = ({ studentId, term }) => {
               <th>TOTAL CA</th>
               <th>EXAM</th>
               <th>TOTAL</th>
-              <th>GRADE</th>
-              <th>NO. IN CLASS</th>
               <th>REMARK</th>
             </tr>
           </thead>
@@ -253,8 +257,6 @@ const ReportCard = ({ studentId, term }) => {
                   <td>
                     <strong>{subject.term_total}</strong>
                   </td>
-                  <td>{subject.grade_name}</td>
-                  <td>{subject.grade.student_count}</td>
                   <td>{subject.remarks}</td>
                 </tr>
               ))}
@@ -266,9 +268,7 @@ const ReportCard = ({ studentId, term }) => {
       <SC.SummarySection>
         <SC.SummaryItem>
           <span>SUBJECT(S) OFFERED</span>
-          <span>
-            {reportData.subjects_scores ? reportData.subjects_scores.length : 0}
-          </span>
+          <span>{reportData.subject_scores.length}</span>
         </SC.SummaryItem>
         <SC.SummaryItem>
           <span>MARK OBTAINED</span>
@@ -293,15 +293,6 @@ const ReportCard = ({ studentId, term }) => {
         <SC.RemarkBox>
           <SC.RemarkTitle>HEADMASTER'S REMARK</SC.RemarkTitle>
           <p>{reportData.headmaster_remark}</p>
-          <div
-            style={{
-              textAlign: "right",
-              fontStyle: "italic",
-              marginTop: "20px",
-            }}
-          >
-            Headmaster
-          </div>
         </SC.RemarkBox>
       </SC.RemarksSection>
 
@@ -316,13 +307,13 @@ const ReportCard = ({ studentId, term }) => {
       </SC.NextTerm>
 
       {/* Skills & Behaviour */}
+      <SC.SectionTitle>SKILLS & BEHAVIOUR</SC.SectionTitle>
       <SC.SkillsBehaviourContainer>
         <div>
-          <SC.SectionTitle>SKILLS & BEHAVIOUR</SC.SectionTitle>
           <SC.SkillsGrid>
             <div>
               <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
-                SKILLS 1 - 5
+                PSYCOMOTOR SKILLS 1 - 5
               </div>
               {reportData.skill_ratings &&
                 reportData.skill_ratings.map((skill, index) => (
@@ -339,7 +330,7 @@ const ReportCard = ({ studentId, term }) => {
                   textAlign: "center",
                 }}
               >
-                5 4 3 2 1
+                1 2 3 4 5
               </div>
               {reportData.skill_ratings &&
                 reportData.skill_ratings.map((skill, index) => (
@@ -348,79 +339,59 @@ const ReportCard = ({ studentId, term }) => {
                   </div>
                 ))}
             </div>
-          </SC.SkillsGrid>
-        </div>
-
-        <div>
-          <SC.SkillsGrid>
             <div>
-              <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
-                BEHAVIOUR 1 - 5
-              </div>
-              {reportData.behaviour_ratings &&
-                reportData.behaviour_ratings.map((behaviour, index) => (
-                  <div key={index} style={{ margin: "8px 0" }}>
-                    {behaviour.behaviour_name}
-                  </div>
-                ))}
-            </div>
-            <div>
-              <div
-                style={{
-                  fontWeight: "bold",
-                  marginBottom: "10px",
-                  textAlign: "center",
-                }}
-              >
-                1 2 3 4 5
-              </div>
-              {reportData.behaviour_ratings &&
-                reportData.behaviour_ratings.map((behaviour, index) => (
-                  <div key={index} style={{ margin: "8px 0" }}>
-                    {renderRatingStars(behaviour.rating)}
-                  </div>
-                ))}
+              {" "}
+              <QRCodeSVG
+                value={`localhost:5173/verify-result/${reportData.id}`}
+                size={100}
+                bgColor="#fff"
+                fgColor="#000"
+                level="L"
+              />
             </div>
           </SC.SkillsGrid>
         </div>
+        <SC.KeyRatings>
+          <h5 style={{ margin: "0 0 15px 0" }}>KEY TO RATINGS</h5>
+          <SC.KeyGrid>
+            <SC.KeyItem>
+              <SC.RatingNumber>5</SC.RatingNumber>
+              <span>Excellent</span>
+            </SC.KeyItem>
+            <SC.KeyItem>
+              <SC.RatingNumber>4</SC.RatingNumber>
+              <span>Good</span>
+            </SC.KeyItem>
+            <SC.KeyItem>
+              <SC.RatingNumber>3</SC.RatingNumber>
+              <span>Fair</span>
+            </SC.KeyItem>
+            <SC.KeyItem>
+              <SC.RatingNumber>2</SC.RatingNumber>
+              <span>Poor</span>
+            </SC.KeyItem>
+            <SC.KeyItem>
+              <SC.RatingNumber>1</SC.RatingNumber>
+              <span>Very Poor</span>
+            </SC.KeyItem>
+          </SC.KeyGrid>
+        </SC.KeyRatings>
       </SC.SkillsBehaviourContainer>
 
-      {/* Key to Ratings */}
-      <SC.KeyRatings>
-        <h5 style={{ margin: "0 0 15px 0" }}>KEY TO RATINGS</h5>
-        <SC.KeyGrid>
-          <SC.KeyItem>
-            <SC.RatingNumber>5</SC.RatingNumber>
-            <span>Maintains an excellent degree of observable traits</span>
-          </SC.KeyItem>
-          <SC.KeyItem>
-            <SC.RatingNumber>4</SC.RatingNumber>
-            <span>Maintains high level of observable traits</span>
-          </SC.KeyItem>
-          <SC.KeyItem>
-            <SC.RatingNumber>3</SC.RatingNumber>
-            <span>Maintains an acceptable level of observable traits</span>
-          </SC.KeyItem>
-          <SC.KeyItem>
-            <SC.RatingNumber>2</SC.RatingNumber>
-            <span>Shows minimal level for observable traits</span>
-          </SC.KeyItem>
-          <SC.KeyItem>
-            <SC.RatingNumber>1</SC.RatingNumber>
-            <span>Has no regards for observable traits</span>
-          </SC.KeyItem>
-        </SC.KeyGrid>
-      </SC.KeyRatings>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          textAlign: "center",
+          width: "100%",
+        }}
+      >
+        <p style={{ display: "flex", alignItems: "center" }}>
+          Powered by <img src={edlogLogo} style={{ height: "70px" }} />
+        </p>
+      </div>
 
-      {/* Footer */}
-      <SC.Footer>
-        <p>Download our Mobile App. Register with your Primary Mobile Number</p>
-        {reportData.parent_email && (
-          <p style={{ fontSize: "12px", color: "#7f8c8d", marginTop: "5px" }}>
-            Parent Email: {reportData.parent_email}
-          </p>
-        )}
-      </SC.Footer>
+      {/* Key to Ratings */}
     </SC.ReportCardContainer>
   );
 };

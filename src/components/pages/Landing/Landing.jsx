@@ -44,6 +44,12 @@ import {
   MobileMenuButton,
   HeroImage,
 } from "./Landing.styles";
+import { FaRegChartBar } from "react-icons/fa";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { RiTodoFill } from "react-icons/ri";
+import { MdAssignmentTurnedIn } from "react-icons/md";
+import { HiDocumentReport } from "react-icons/hi";
+import { MdOutlineFamilyRestroom } from "react-icons/md";
 
 const Landing = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -51,37 +57,37 @@ const Landing = () => {
 
   const features = [
     {
-      icon: "📊",
-      title: "Smart Dashboard",
+      icon: <FaRegChartBar />,
+      title: "Deep Analytics",
       description:
-        "Get real-time insights into student performance, attendance, and school operations with our intuitive dashboard.",
+        "Gain Granular Insight into student participation and curriculum effectiveness",
     },
     {
-      icon: "👥",
+      icon: <FaPeopleGroup />,
       title: "Student Management",
       description:
         "Easily manage student records, admissions, and academic progress all in one centralized system.",
     },
     {
-      icon: "✅",
+      icon: <RiTodoFill />,
       title: "Attendance Tracking",
       description:
         "Automate attendance marking with our smart system that supports bulk operations and real-time reporting.",
     },
     {
-      icon: "📝",
+      icon: <MdAssignmentTurnedIn />,
       title: "Assignment System",
       description:
         "Create, distribute, and grade assignments seamlessly with our integrated learning management tools.",
     },
     {
-      icon: "💳",
+      icon: <HiDocumentReport />,
       title: "Fee Management",
       description:
         "Streamline fee collection, generate invoices, and track payments with automated reminders.",
     },
     {
-      icon: "📱",
+      icon: <MdOutlineFamilyRestroom />,
       title: "Parent Portal",
       description:
         "Keep parents informed with real-time updates on their child's progress, attendance, and school activities.",
@@ -110,20 +116,17 @@ const Landing = () => {
   ];
 
   const handleGetStarted = () => {
-    navigate("/login");
+    navigate("/signup");
   };
 
-  const handleDemoRequest = () => {
-    // In a real app, this would open a demo request form
-    alert(
-      "Thank you for your interest! Our team will contact you shortly to schedule a demo.",
-    );
+  const handleLogin = () => {
+    navigate("/login");
   };
 
   return (
     <LandingContainer>
       <Navbar>
-        <Container>
+        <Container style={{ padding: "0" }}>
           <NavContent>
             <div style={{ display: "flex", alignItems: "center" }}>
               <img src={logoColor} alt="logo" style={{ height: "80px" }} />
@@ -181,12 +184,8 @@ const Landing = () => {
               >
                 Get Started
               </StyledButton>
-              <StyledButton
-                variant="secondary"
-                size="lg"
-                onClick={handleDemoRequest}
-              >
-                Schedule Demo
+              <StyledButton variant="secondary" size="lg" onClick={handleLogin}>
+                Login
               </StyledButton>
             </CTAButtons>
           </HeroContent>
@@ -267,12 +266,8 @@ const Landing = () => {
             >
               Start Free Trial
             </StyledButton>
-            <StyledButton
-              variant="secondary"
-              size="lg"
-              onClick={handleDemoRequest}
-            >
-              Schedule Demo
+            <StyledButton variant="secondary" size="lg" onClick={handleLogin}>
+              Login
             </StyledButton>
           </CTAButtons>
         </Container>

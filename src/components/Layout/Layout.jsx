@@ -29,6 +29,19 @@ import {
   UserRole,
 } from "./Sidebar.styles";
 import { Container, IconButton } from "../../components/common";
+import logoColor from "../../assets/edlog logo color.png";
+import { AiFillDashboard } from "react-icons/ai";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { GiTeacher } from "react-icons/gi";
+import { RiTodoFill } from "react-icons/ri";
+import { MdAssignmentTurnedIn } from "react-icons/md";
+import { HiDocumentReport } from "react-icons/hi";
+import { FaFileUpload } from "react-icons/fa";
+import { IoMdCash } from "react-icons/io";
+import { BsFileBarGraphFill } from "react-icons/bs";
+import { IoPersonCircle } from "react-icons/io5";
+import { PiGearFill } from "react-icons/pi";
+import { BiSolidExit } from "react-icons/bi";
 
 const Layout = () => {
   const { user, logout } = useAuth();
@@ -44,9 +57,8 @@ const Layout = () => {
     if (window.innerWidth <= 768) {
       setSidebarOpen(false);
     }
-  }, [location]);
+  }, [location, user]);
 
-  console.log(user);
   const handleLogout = async () => {
     try {
       await logout();
@@ -65,25 +77,66 @@ const Layout = () => {
   const adminNavigation = [
     {
       section: "Main",
-      items: [{ path: "/app", label: "Dashboard", icon: "📊" }],
+      items: [{ path: "/app", label: "Dashboard", icon: <AiFillDashboard /> }],
     },
     {
       section: "Academic",
       items: [
-        { path: "/app/students", label: "Students", icon: "👥" },
-        { path: "/app/teachers", label: "Teachers", icon: "👨‍🏫" },
-        { path: "/app/attendance", label: "Attendance", icon: "✅" },
-        { path: "/app/assignments", label: "Assignments", icon: "📝" },
-        { path: "/app/timetable", label: "Timetable", icon: "📅" },
-        { path: "/app/report-card", label: "Report Card", icon: "📋" },
-        { path: "/app/score-upload", label: "Upload Score", icon: "�" },
+        { path: "/app/students", label: "Students", icon: <FaPeopleGroup /> },
+        { path: "/app/teachers", label: "Teachers", icon: <GiTeacher /> },
+        { path: "/app/attendance", label: "Attendance", icon: <RiTodoFill /> },
+        {
+          path: "/app/assignments",
+          label: "Assignments",
+          icon: <MdAssignmentTurnedIn />,
+        },
+        {
+          path: "/app/performance-input",
+          label: "Create Report Card",
+          icon: <FaFileUpload />,
+        },
+        // { path: "/app/timetable", label: "Timetable", icon: <HiDocumentReport /> },
+        {
+          path: "/app/bulk-report",
+          label: "Generate Bulk Report Card",
+          icon: <HiDocumentReport />,
+        },
+        {
+          path: "/app/score-upload",
+          label: "Upload Score",
+          icon: <FaFileUpload />,
+        },
       ],
     },
     {
       section: "Administration",
       items: [
-        { path: "/app/finance", label: "Finance", icon: "💳" },
-        { path: "/app/reports", label: "Reports", icon: "📈" },
+        { path: "/app/finance", label: "Finance", icon: <IoMdCash /> },
+        {
+          path: "/app/reports",
+          label: "Reports",
+          icon: <BsFileBarGraphFill />,
+        },
+        {
+          path: "/app/Subjects",
+          label: "Subjects",
+          icon: <BsFileBarGraphFill />,
+        },
+        {
+          path: "/app/academic-years",
+          label: "Academic Years",
+          icon: <BsFileBarGraphFill />,
+        },
+        {
+          path: "/app/terms",
+          label: "Terms",
+          icon: <BsFileBarGraphFill />,
+        },
+        {
+          path: "/app/grades",
+          label: "Classes",
+          icon: <BsFileBarGraphFill />,
+        },
       ],
     },
   ];
@@ -91,15 +144,28 @@ const Layout = () => {
   const teacherNavigation = [
     {
       section: "Main",
-      items: [{ path: "/app", label: "Dashboard", icon: "📊" }],
+      items: [{ path: "/app", label: "Dashboard", icon: <AiFillDashboard /> }],
     },
     {
       section: "Academic",
       items: [
-        { path: "/app/attendance", label: "Attendance", icon: "✅" },
-        { path: "/app/assignments", label: "Assignments", icon: "📝" },
-        { path: "/app/timetable", label: "Timetable", icon: "📅" },
-        { path: "/app/score-upload", label: "Upload Score", icon: "�" },
+        { path: "/app/attendance", label: "Attendance", icon: <RiTodoFill /> },
+        {
+          path: "/app/assignments",
+          label: "Assignments",
+          icon: <MdAssignmentTurnedIn />,
+        },
+        // { path: "/app/timetable", label: "Timetable", icon:  },
+        {
+          path: "/app/score-upload",
+          label: "Upload Score",
+          icon: <FaFileUpload />,
+        },
+        {
+          path: "/app/performance-input",
+          label: "Create Report Card",
+          icon: <FaFileUpload />,
+        },
       ],
     },
   ];
@@ -107,34 +173,48 @@ const Layout = () => {
   const studentNavigation = [
     {
       section: "Main",
-      items: [{ path: "/app", label: "Dashboard", icon: "📊" }],
+      items: [{ path: "/app", label: "Dashboard", icon: <AiFillDashboard /> }],
     },
     {
       section: "Academic",
       items: [
-        { path: "/app/assignments", label: "Assignments", icon: "📝" },
-        { path: "/app/timetable", label: "Timetable", icon: "📅" },
-        { path: "/app/report-card", label: "Report Card", icon: "📋" },
+        {
+          path: "/app/student-assignment",
+          label: "Assignments",
+          icon: <MdAssignmentTurnedIn />,
+        },
+        // { path: "/app/timetable", label: "Timetable", icon: <HiDocumentReport /> },
+        {
+          path: "/app/report-card",
+          label: "Report Card",
+          icon: <HiDocumentReport />,
+        },
       ],
     },
     {
       section: "Administration",
-      items: [{ path: "/app/finance", label: "Finance", icon: "💳" }],
+      items: [{ path: "/app/finance", label: "Finance", icon: <IoMdCash /> }],
     },
   ];
 
   const parentNavigation = [
     {
       section: "Main",
-      items: [{ path: "/app", label: "Dashboard", icon: "📊" }],
+      items: [{ path: "/app", label: "Dashboard", icon: <AiFillDashboard /> }],
     },
     {
       section: "Academic",
-      items: [{ path: "/app/report-card", label: "Report Card", icon: "📋" }],
+      items: [
+        {
+          path: "/app/report-card",
+          label: "Report Card",
+          icon: <HiDocumentReport />,
+        },
+      ],
     },
     {
       section: "Administration",
-      items: [{ path: "/app/finance", label: "Finance", icon: "💳" }],
+      items: [{ path: "/app/finance", label: "Finance", icon: <IoMdCash /> }],
     },
   ];
 
@@ -142,7 +222,7 @@ const Layout = () => {
     if (userType === "admin") {
       return adminNavigation;
     } else if (userType === "teacher") {
-      return adminNavigation;
+      return teacherNavigation;
     } else if (userType === "parent") {
       return parentNavigation;
     }
@@ -173,7 +253,7 @@ const Layout = () => {
                 ☰
               </IconButton>
               <Logo>
-                Edu<span>Manage</span>
+                <img src={logoColor} alt="logo" style={{ height: "80px" }} />
               </Logo>
             </div>
 
@@ -206,17 +286,17 @@ const Layout = () => {
                         /* Profile settings */
                       }}
                     >
-                      👤 Profile Settings
+                      <IoPersonCircle /> Profile Settings
                     </DropdownItem>
                     <DropdownItem
                       onClick={() => {
                         /* Preferences */
                       }}
                     >
-                      ⚙️ Preferences
+                      <PiGearFill /> Preferences
                     </DropdownItem>
                     <DropdownItem onClick={handleLogout}>
-                      🚪 Logout
+                      <BiSolidExit /> Logout
                     </DropdownItem>
                   </UserDropdown>
                 )}
@@ -234,14 +314,14 @@ const Layout = () => {
       <Sidebar isOpen={sidebarOpen}>
         <SidebarHeader>
           <Logo>
-            Edu<span>Manage</span>
+            <img src={logoColor} alt="logo" style={{ height: "80px" }} />
           </Logo>
         </SidebarHeader>
 
         <SidebarNav>
           {
             // (user.user_type === "admin")
-            navigation(user.user_type).map((section) => (
+            navigation(user?.user_type || "").map((section) => (
               <NavSection key={section.section}>
                 <NavSectionTitle>{section.section}</NavSectionTitle>
                 {section.items.map((item) => (

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../../../services";
 import { useAuth } from "../../../contexts/AuthContext";
+import api from "../../../services/api12"
 import {
   LoginContainer,
   LoginCard,
@@ -49,9 +50,17 @@ const Login = () => {
     localStorage.clear();
 
     try {
-      const result = await authService.login(formData);
-      console.log(result.user);
-      login(result.user);
+      await authService.login(formData).then((response)=>{
+        console.log(response)
+        if (response.data){
+          localStorage.setItem("access_token", response.data.access);
+          localStorage.setItem("refresh_token", response.data.refresh);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          login(response.data.user);
+          api.defaults.headers["Authorization"] =
+          "JWT " + localStorage.getItem("access_token");
+        } 
+      });
       navigate("/app", { replace: true });
     } catch (err) {
       setError(err.message || "Login failed. Please check your credentials.");

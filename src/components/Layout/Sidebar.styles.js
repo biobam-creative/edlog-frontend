@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export const Sidebar = styled.aside`
   width: 280px;
-  background-color: ${(props) => props.theme.colors.surface};
+  background-color: ${(props) => props.theme.colors.navy};
   border-right: 1px solid ${(props) => props.theme.colors.border};
   height: 100vh;
   position: fixed;
@@ -43,7 +43,7 @@ export const NavSection = styled.div`
 export const NavSectionTitle = styled.h3`
   font-size: ${(props) => props.theme.typography.small};
   font-weight: 600;
-  color: ${(props) => props.theme.colors.text.light};
+  color: ${(props) => props.theme.colors.teal};
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 0 ${(props) => props.theme.spacing.lg};
@@ -56,13 +56,13 @@ export const NavItem = styled(Link)`
   gap: ${(props) => props.theme.spacing.sm};
   padding: ${(props) => props.theme.spacing.sm}
     ${(props) => props.theme.spacing.lg};
-  color: ${(props) => props.theme.colors.text.secondary};
+  color: ${(props) => props.theme.colors.teal};
   transition: all 0.2s ease-in-out;
   border-left: 3px solid transparent;
   text-decoration: none;
 
   &:hover {
-    color: ${(props) => props.theme.colors.primary};
+    color: ${(props) => props.theme.colors.navy};
     background-color: ${(props) => props.theme.colors.surfaceDark};
     text-decoration: none;
   }

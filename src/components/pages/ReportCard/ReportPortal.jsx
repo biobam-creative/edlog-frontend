@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ReportCard from "./ReportCard";
 import { useAuth } from "../../../contexts/AuthContext";
-import { academicsService } from "../../../services";
+import { academicsService, studentsService } from "../../../services";
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -23,12 +23,18 @@ const Sidebar = styled.div`
   @media (max-width: 768px) {
     width: 100%;
   }
+  @media print {
+    display: none;
+  }
 `;
 
 const MainContent = styled.div`
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  @media print {
+    padding: 0;
+  }
 `;
 
 const StudentList = styled.ul`
@@ -78,9 +84,15 @@ const ReportPortal = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log(user);
-    fetchStudents();
-  }, []);
+    console.log(user?.user_type);
+    if (user?.user_type === "parent") {
+      fetchStudents();
+    } else {
+      if (user?.user_type === "student") {
+        setSelectedStudent(user.id);
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchTerms();
@@ -90,34 +102,21 @@ const ReportPortal = () => {
     try {
       const data = await academicsService.getTerms();
       setTerms(data);
-      if (data.length > 0) {
-        setSelectedTerm(data[0].id);
-      }
+
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching grades:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchStudents = async () => {
+    console.log(user);
     try {
-      // In a real app, fetch from your API
-      // For demo, using mock data
-      const mockStudents = [
-        {
-          id: 1,
-          name: "FAMUREWA Irebami John",
-          admission_number: "GFNPS/2017/0225",
-          class: "BASIC 5",
-        },
-        {
-          id: 1,
-          name: "FAMUREWA Ayo John",
-          admission_number: "GFNPS/2017/0245",
-          class: "BASIC 5",
-        },
-      ];
-      setStudents(mockStudents);
-      setSelectedStudent(mockStudents[0]);
+      const data = await studentsService.getParentWards();
+      setStudents(data);
+      // setSelectedStudent(mockStudents[0]);
     } catch (error) {
       console.error("Failed to fetch students:", error);
     } finally {
@@ -136,24 +135,27 @@ const ReportPortal = () => {
 
         {user.user_type === "parent" && (
           <>
-            <h3 style={{ marginTop: "30px" }}>My Children</h3>
-            <StudentList>
-              {students.map((student) => (
-                <StudentItem
-                  key={student.admission_number}
-                  active={
-                    selectedStudent?.admission_number ===
-                    student.admission_number
-                  }
-                  onClick={() => setSelectedStudent(student)}
-                >
-                  {student.name}
-                  <div style={{ fontSize: "12px", opacity: 0.8 }}>
-                    {student.class} • {student.admission_number}
-                  </div>
-                </StudentItem>
-              ))}
-            </StudentList>
+            <h3 style={{ marginTop: "30px" }}>My Wards</h3>
+            <div>
+              <label
+                htmlFor="wards"
+                style={{ display: "block", marginBottom: "5px" }}
+              >
+                Select Wards
+              </label>
+              <FilterSelect
+                id="wards"
+                value={selectedStudent}
+                onChange={(e) => setSelectedStudent(e.target.value)}
+              >
+                <option value="">Select Ward</option>
+                {students.map((student) => (
+                  <option key={student.id} value={student.user.id}>
+                    {student.user.first_name + " " + student.user.last_name}
+                  </option>
+                ))}
+              </FilterSelect>
+            </div>
           </>
         )}
 
@@ -171,29 +173,12 @@ const ReportPortal = () => {
               value={selectedTerm}
               onChange={(e) => setSelectedTerm(e.target.value)}
             >
+              <option value="">Select Term</option>
               {terms.map((term) => (
                 <option key={term.id} value={term.id}>
                   {term.name} {term.academic_year.name}
                 </option>
               ))}
-            </FilterSelect>
-          </div>
-
-          <div style={{ marginTop: "15px" }}>
-            <label
-              htmlFor="year"
-              style={{ display: "block", marginBottom: "5px" }}
-            >
-              Academic Year
-            </label>
-            <FilterSelect
-              id="year"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              <option value="2025/2026">2025/2026</option>
-              <option value="2024/2025">2024/2025</option>
-              <option value="2023/2024">2023/2024</option>
             </FilterSelect>
           </div>
         </div>
@@ -202,9 +187,7 @@ const ReportPortal = () => {
       <MainContent>
         {selectedStudent ? (
           <ReportCard
-            studentId={
-              user.user_type === "student" ? user.id : selectedStudent.id
-            }
+            studentId={user.user_type === "student" ? user.id : selectedStudent}
             term={selectedTerm}
           />
         ) : (

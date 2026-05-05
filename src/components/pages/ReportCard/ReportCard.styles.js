@@ -56,6 +56,10 @@ export const SchoolName = styled.h1`
   margin: 10px 0;
   font-size: 24px;
 `;
+export const SchoolLogo = styled.img`
+  height: 100px;
+  width: 100px;
+`;
 
 export const ReportTitle = styled.h2`
   color: #2c3e50;
@@ -78,6 +82,12 @@ export const InfoItem = styled.div`
   border: 1px solid #ddd;
   border-radius: 4px;
   background: ${(props) => (props.highlight ? "#ecf0f1" : "white")};
+  @media print {
+    padding: 2px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 export const InfoLabel = styled.span`
@@ -86,21 +96,35 @@ export const InfoLabel = styled.span`
   color: #666;
   text-transform: uppercase;
   margin-bottom: 4px;
+  @media print {
+    font-weight: normal;
+    margin-right: 4px;
+  }
 `;
 
 export const InfoValue = styled.span`
   font-size: 14px;
   font-weight: bold;
   color: #2c3e50;
+  @media print {
+    font-weight: normal;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
 `;
 
 export const SectionTitle = styled.h3`
   text-align: center;
   background: #2c3e50;
   color: white;
-  padding: 10px;
+  padding: 3px;
   margin: 20px 0;
   border-radius: 4px;
+
+  @media print {
+    margin: 5px 0;
+    font-size: 14px;
+  }
 `;
 
 export const ScoresTable = styled.table`
@@ -108,6 +132,9 @@ export const ScoresTable = styled.table`
   border-collapse: collapse;
   font-size: 12px;
   margin: 20px 0;
+  @media print {
+    margin: 5px 0;
+  }
 
   th {
     background: #34495e;
@@ -116,12 +143,18 @@ export const ScoresTable = styled.table`
     text-align: center;
     border: 1px solid #ddd;
     font-weight: 600;
+    @media print {
+      padding: 2px;
+    }
   }
 
   td {
     padding: 8px;
     text-align: center;
     border: 1px solid #ddd;
+    @media print {
+      padding: 2px;
+    }
   }
 
   tbody tr:nth-child(even) {
@@ -136,12 +169,17 @@ export const ScoresTable = styled.table`
 export const SummarySection = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 10px;
   margin: 30px 0;
   padding: 20px;
   background: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 6px;
+
+  @media print {
+    padding: 5px;
+    gap: 5px;
+  }
 `;
 
 export const SummaryItem = styled.div`
@@ -156,12 +194,20 @@ export const SummaryItem = styled.div`
     color: #666;
     margin-bottom: 8px;
     text-align: center;
+
+    @media print {
+      font-size: 11px;
+    }
   }
 
   span:last-child {
     font-size: 24px;
     font-weight: bold;
     color: #2c3e50;
+
+    @media print {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -174,22 +220,35 @@ export const RemarksSection = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
+  @media print {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    width: 100%;
+  }
 `;
 
 export const RemarkBox = styled.div`
-  padding: 20px;
+  padding: 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background: #f8f9fa;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media print {
+    flex: 1;
+  }
 `;
 
 export const RemarkTitle = styled.h4`
   margin-top: 0;
   color: #2c3e50;
-  border-bottom: 2px solid #3498db;
+  border-bottom: 1px solid #3498db;
   padding-bottom: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  @media print {
+    font-size: 12px;
+  }
 `;
 
 export const NextTerm = styled.div`
@@ -200,6 +259,10 @@ export const NextTerm = styled.div`
   margin: 20px 0;
   border-radius: 4px;
   font-weight: bold;
+  @media print {
+    font-size: 11px;
+    padding: 5px;
+  }
 `;
 
 export const SkillsBehaviourContainer = styled.div`
@@ -211,6 +274,13 @@ export const SkillsBehaviourContainer = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
+  @media print {
+    display: flex;
+    margin: 10px 0;
+    align-items: space-between;
+    justify-content: space-between;
+    width: 100%;
+  }
 `;
 
 export const SkillsGrid = styled.div`
@@ -218,6 +288,13 @@ export const SkillsGrid = styled.div`
   grid-template-columns: auto auto;
   gap: 20px;
   align-items: start;
+
+  @media print {
+    flex: 1;
+    gap: 20px;
+    display: flex;
+    font-size: 12px;
+  }
 `;
 
 export const BehaviourGrid = styled.div`
@@ -225,6 +302,11 @@ export const BehaviourGrid = styled.div`
   grid-template-columns: auto auto;
   gap: 20px;
   align-items: start;
+  @media print {
+    flex: 1;
+    gap: 20px;
+    display: flex;
+  }
 `;
 
 export const RatingStars = styled.div`
@@ -252,6 +334,13 @@ export const KeyGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
   margin-top: 15px;
+
+  @media print {
+    margin-top: 10px;
+    gap: 10px;
+    padding: 0;
+    display: flex;
+  }
 `;
 
 export const KeyItem = styled.div`
@@ -262,6 +351,10 @@ export const KeyItem = styled.div`
   background: white;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  @media print {
+    padding: 0;
+    gap: 2px;
+  }
 `;
 
 export const RatingNumber = styled.span`
@@ -311,6 +404,10 @@ export const EmailNotification = styled.div`
   border: 1px solid ${(props) => (props.sent ? "#c3e6cb" : "#ffeaa7")};
   border-radius: 4px;
   margin: 20px 0;
+
+  @media print {
+    display: none;
+  }
 `;
 
 export const EmailStatus = styled.div`

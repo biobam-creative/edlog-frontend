@@ -20,7 +20,7 @@ api.interceptors.request.use(
   (config) => {
     const user = localStorage.getItem("user");
     const userData = JSON.parse(user);
-    const accessToken = userData.access_token;
+    const accessToken = JSON.parse(localStorage.getItem("access_token"));
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     } else {
@@ -29,14 +29,16 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.log(error);
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.log(error);
     if (error.response?.status === 401) {
       // Unauthorized - redirect to login
       localStorage.removeItem("access_token");
@@ -44,7 +46,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

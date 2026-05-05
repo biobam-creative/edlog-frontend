@@ -24,6 +24,40 @@ class AcademicsService {
     }
   }
 
+  async getAcademicYearById(academicYearId) {
+    try {
+      const response = await api.get(
+        `/academics/academic-years/${academicYearId}/`,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async updateAcademicYear(academicYearId, academicYearData) {
+    try {
+      const response = await api.put(
+        `/academics/academic-years/${academicYearId}/`,
+        academicYearData,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async deleteAcademicYear(academicYearId) {
+    try {
+      const response = await api.delete(
+        `/academics/academic-years/${academicYearId}/`,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // Grades/Classes
   async getGrades() {
     try {
@@ -83,9 +117,48 @@ class AcademicsService {
     }
   }
 
+  async getSubjectsByGrade(gradeId) {
+    try {
+      const response = await api.get(`/academics/grade_subjects/${gradeId}`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async getSubjectById(subjectId) {
+    try {
+      const response = await api.get(`/academics/subjects/${subjectId}/`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async createSubject(subjectData) {
     try {
       const response = await api.post("/academics/subjects/", subjectData);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async updateSubject(subjectId, subjectData) {
+    try {
+      const response = await api.put(
+        `/academics/subjects/${subjectId}/`,
+        subjectData,
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async deleteSubject(subjectId) {
+    try {
+      const response = await api.delete(`/academics/subjects/${subjectId}/`);
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -134,9 +207,36 @@ class AcademicsService {
     }
   }
 
+  async getTermById(termId) {
+    try {
+      const response = await api.get(`/academics/terms/${termId}/`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   async createTerm(termData) {
     try {
       const response = await api.post("/academics/terms/", termData);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async updateTerm(termId, termData) {
+    try {
+      const response = await api.put(`/academics/terms/${termId}/`, termData);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async deleteTerm(termId) {
+    try {
+      const response = await api.delete(`/academics/terms/${termId}/`);
       return response.data;
     } catch (error) {
       throw this.handleError(error);

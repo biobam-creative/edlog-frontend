@@ -1,4 +1,5 @@
 // src/services/authService.js
+import axios from "axios";
 import api from "./api12";
 
 class AuthService {
@@ -15,24 +16,27 @@ class AuthService {
 
   // Login user
   async login(credentials) {
-    console.log(credentials);
-    try {
-      // First get CSRF token
-      // await this.getCSRFToken();
-      // console.log("CSRF token obtained successfully.");
-      const response = await api.post("/auth/login/", credentials);
-      console.log(response.data);
-
-      if (response.data) {
-        localStorage.setItem("access_token", response.data.access);
-        localStorage.setItem("refresh_token", response.data.refresh);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-      }
-
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error);
-    }
+    return await api.post(`/auth/login/`, credentials);
+    // try {
+    //   // First get CSRF token
+    //   // await this.getCSRFToken();
+    //   // console.log("CSRF token obtained successfully.");
+    //   return await api.post(
+    //     `/auth/login/`,
+    //     credentials,
+    //   ).then((response)=>{
+    //     console.log(response)
+    //     if (response.data){
+    //       localStorage.setItem("access_token", response.data.access);
+    //       localStorage.setItem("refresh_token", response.data.refresh);
+    //       localStorage.setItem("user", JSON.stringify(response.data.user));
+    //       return response.data;
+    //     }
+    //     return response.data;
+    //   });
+    // } catch (error) {
+    //   throw this.handleError(error);
+    // }
   }
 
   // Logout user

@@ -56,14 +56,14 @@ const primaryStyles = css`
 `;
 
 const secondaryStyles = css`
-  background-color: #ffffff33;
-  color: ${(props) => props.theme.colors.slate};
-  border: 1px solid ${(props) => props.theme.colors.slate};
+  background-color: #${(props) => props.theme.colors.navy};
+  color: ${(props) => props.theme.colors.teal};
+  border: 2px solid ${(props) => props.theme.colors.teal};
 
   &:hover:not(:disabled) {
     background-color: #ffffff1a;
-    color: ${(props) => props.theme.colors.text.inverse};
-    border: 1px solid ${(props) => props.theme.colors.slate};
+    color: ${(props) => props.theme.colors.teal};
+    border: 2px solid ${(props) => props.theme.colors.teal};
   }
 `;
 
@@ -78,12 +78,23 @@ const dangerStyles = css`
   }
 `;
 
+const warningStyle = css`
+background-color: yellow;
+  color: ${(props) => props.theme.colors.text.inverse};
+
+  &:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: ${(props) => props.theme.shadows.md};
+`;
 const getVariantStyles = (variant) => {
   switch (variant) {
     case "secondary":
       return secondaryStyles;
     case "danger":
       return dangerStyles;
+    case "warning":
+      return warningStyle;
     default:
       return primaryStyles;
   }
@@ -95,32 +106,12 @@ export const StyledButton = styled.button`
 `;
 
 export const IconButton = styled.button`
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: ${(props) => {
-    switch (props.size) {
-      case "sm":
-        return "32px";
-      case "lg":
-        return "48px";
-      default:
-        return "40px";
-    }
-  }};
-  height: ${(props) => {
-    switch (props.size) {
-      case "sm":
-        return "32px";
-      case "lg":
-        return "48px";
-      default:
-        return "40px";
-    }
-  }};
   border-radius: ${(props) => props.theme.borderRadius.md};
   background-color: transparent;
-  color: ${(props) => props.theme.colors.text.secondary};
+  color: ${(props) => props.theme.colors.teal};
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;

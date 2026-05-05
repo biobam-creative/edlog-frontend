@@ -50,14 +50,20 @@ export const AssignmentModal = ({
     due_date: "",
     total_marks: "",
     instructions: "",
-    attachment_url: "",
-    assignment_type: "homework",
+    attachment: null,
+    submission_type: "both",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [filteredSubjects, setFilteredSubjects] = useState([]);
 
   // Assignment types
+  const submitissionTypeOptions = [
+    { value: "file", label: "File Upload Only" },
+    { value: "text", label: "Text Submission Only" },
+    { value: "both", label: "File or Text Submission" },
+  ];
+
   const assignmentTypes = [
     { value: "homework", label: "Homework" },
     { value: "classwork", label: "Classwork" },
@@ -69,21 +75,22 @@ export const AssignmentModal = ({
 
   const availableSubjects = useMemo(
     () => subjects || defaultSubjects,
-    [subjects]
+    [subjects],
   );
 
   useEffect(() => {
+    console.log(subjects);
     if (assignment) {
       setFormData({
         title: assignment.title || "",
         description: assignment.description || "",
         subject: assignment.subject || "",
         grade: assignment.grade || "",
-        due_date: assignment.due_date || "",
+        due_date: assignment.due_date ? assignment.due_date.split("T")[0] : "",
         total_marks: assignment.total_marks || "",
         instructions: assignment.instructions || "",
-        attachment_url: assignment.attachment_url || "",
-        assignment_type: assignment.assignment_type || "homework",
+        attachment: assignment.attachment || null,
+        submission_type: assignment.submission_type || "both",
       });
     } else {
       const today = new Date();
@@ -98,8 +105,8 @@ export const AssignmentModal = ({
         due_date: dueDate.toISOString().split("T")[0],
         total_marks: "",
         instructions: "",
-        attachment_url: "",
-        assignment_type: "homework",
+        attachment: null,
+        submission_type: "both",
       });
     }
     setErrors({});
@@ -108,9 +115,10 @@ export const AssignmentModal = ({
   useEffect(() => {
     // Filter subjects based on selected grade
     if (formData.grade) {
-      const filtered = availableSubjects.filter(
-        (subject) => subject.grade_id == formData.grade
+      const filtered = subjects.filter(
+        (subject) => subject.grade == formData.grade,
       );
+      console.log(filtered);
       setFilteredSubjects(filtered);
 
       // Auto-select first subject if only one exists and no subject is selected
@@ -141,13 +149,13 @@ export const AssignmentModal = ({
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     if (file) {
-      // In real app, this would upload to your server
-      // For now, we'll just store the file name
       setFormData((prev) => ({
         ...prev,
-        attachment_url: file.name,
+        attachment: file,
       }));
+      console.log(formData);
     }
   };
 
@@ -197,6 +205,10 @@ export const AssignmentModal = ({
       newErrors.assignment_type = "Assignment type is required";
     }
 
+    if (!formData.submission_type) {
+      newErrors.submission_type = "Submission type is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -210,13 +222,24 @@ export const AssignmentModal = ({
 
     setLoading(true);
     try {
-      const assignmentData = {
-        ...formData,
-        total_marks: parseFloat(formData.total_marks),
-        grade: parseInt(formData.grade),
-        subject: parseInt(formData.subject),
-      };
-      await onSave(assignmentData);
+      const assignmentFormData = new FormData();
+      assignmentFormData.append("title", formData.title);
+      assignmentFormData.append("description", formData.description);
+      assignmentFormData.append("subject", parseInt(formData.subject));
+      assignmentFormData.append("grade", parseInt(formData.grade));
+      assignmentFormData.append("due_date", formData.due_date);
+      assignmentFormData.append(
+        "total_marks",
+        parseFloat(formData.total_marks),
+      );
+      assignmentFormData.append("submission_type", formData.submission_type);
+      assignmentFormData.append("instructions", formData.instructions);
+      if (formData.attachment instanceof File) {
+        assignmentFormData.append("attachment", formData.attachment);
+      }
+
+      console.log(assignmentFormData);
+      await onSave(assignmentFormData);
     } catch (error) {
       if (error.errors) {
         setErrors(error.errors);
@@ -303,23 +326,25 @@ export const AssignmentModal = ({
               Basic Information
             </h3>
 
-            <FormGroup>
-              <Label htmlFor="title">Assignment Title *</Label>
-              <Input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                hasError={!!errors.title}
-                disabled={loading}
-                placeholder="Enter a clear and descriptive title for the assignment"
-              />
-              {errors.title && <ErrorMessage>{errors.title}</ErrorMessage>}
-              <small style={{ color: "#6b7280", fontSize: "0.75rem" }}>
-                Be specific about what students need to do
-              </small>
-            </FormGroup>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="title">Assignment Title *</Label>
+                <Input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  hasError={!!errors.title}
+                  disabled={loading}
+                  placeholder="Enter a clear and descriptive title for the assignment"
+                />
+                {errors.title && <ErrorMessage>{errors.title}</ErrorMessage>}
+                <small style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+                  Be specific about what students need to do
+                </small>
+              </FormGroup>
+            </FormRow>
 
             <FormRow>
               <FormGroup>
@@ -345,6 +370,32 @@ export const AssignmentModal = ({
               </FormGroup>
 
               <FormGroup>
+                <Label htmlFor="submission_type">Submission Type *</Label>
+                <Select
+                  id="submission_type"
+                  name="submission_type"
+                  value={formData.submission_type}
+                  onChange={handleChange}
+                  hasError={!!errors.submission_type}
+                  disabled={loading}
+                >
+                  {submitissionTypeOptions.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </Select>
+                {errors.submission_type && (
+                  <ErrorMessage>{errors.submission_type}</ErrorMessage>
+                )}
+                <small style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+                  Choose how students will submit their work
+                </small>
+              </FormGroup>
+            </FormRow>
+
+            <FormRow>
+              <FormGroup>
                 <Label htmlFor="total_marks">Total Marks *</Label>
                 <Input
                   type="number"
@@ -363,11 +414,13 @@ export const AssignmentModal = ({
                   <ErrorMessage>{errors.total_marks}</ErrorMessage>
                 )}
               </FormGroup>
-            </FormRow>
 
+              <FormGroup>
+                <Label></Label>
+              </FormGroup>
+            </FormRow>
             <FormRow>
               <FormGroup>
-                <Label htmlFor="grade">Grade *</Label>
                 <Select
                   id="grade"
                   name="grade"
@@ -615,7 +668,7 @@ export const AssignmentModal = ({
                         <strong>Type:</strong>{" "}
                         {
                           assignmentTypes.find(
-                            (t) => t.value === formData.assignment_type
+                            (t) => t.value === formData.assignment_type,
                           )?.label
                         }
                       </div>
@@ -628,6 +681,7 @@ export const AssignmentModal = ({
                   </div>
                 </div>
               </div>
+              // </Form>
             )}
           </Form>
         </ModalBody>
@@ -649,9 +703,10 @@ export const AssignmentModal = ({
                 Cancel
               </Button>
               <Button
+                type="submit"
                 variant="primary"
-                onClick={handleSubmit}
                 disabled={loading}
+                onClick={handleSubmit}
               >
                 {loading ? (
                   <>

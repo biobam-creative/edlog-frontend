@@ -35,6 +35,7 @@ import {
   Input,
 } from "../../common";
 import { AssignmentModal } from "./AssignmentModal";
+import { useNavigate } from "react-router-dom";
 
 const Assignments = () => {
   const [assignments, setAssignments] = useState([]);
@@ -46,10 +47,14 @@ const Assignments = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [subjects, setSubjects] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAssignments();
     fetchGrades();
+    fetchSubjects();
   }, []);
 
   useEffect(() => {
@@ -77,6 +82,16 @@ const Assignments = () => {
     }
   };
 
+  const fetchSubjects = async () => {
+    try {
+      const data = await academicsService.getSubjects();
+      setSubjects(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching grades:", error);
+    }
+  };
+
   const filterAssignments = () => {
     let filtered = assignments;
 
@@ -86,13 +101,13 @@ const Assignments = () => {
           assignment.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           assignment.subject_name
             ?.toLowerCase()
-            .includes(searchTerm.toLowerCase())
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
     if (gradeFilter) {
       filtered = filtered.filter(
-        (assignment) => assignment.grade?.toString() === gradeFilter
+        (assignment) => assignment.grade?.toString() === gradeFilter,
       );
     }
 
@@ -121,6 +136,11 @@ const Assignments = () => {
     setIsModalOpen(true);
   };
 
+  const handleGradeAssignment = (studentAssignment) => {
+    setSelectedAssignment(assignment);
+    setIsModalOpen(true);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedAssignment(null);
@@ -128,10 +148,11 @@ const Assignments = () => {
 
   const handleAssignmentSave = async (assignmentData) => {
     try {
+      console.log(assignmentData);
       if (selectedAssignment) {
         await assignmentsService.updateAssignment(
           selectedAssignment.id,
-          assignmentData
+          assignmentData,
         );
       } else {
         await assignmentsService.createAssignment(assignmentData);
@@ -290,7 +311,7 @@ const Assignments = () => {
                     ? Math.round(
                         (assignment.submission_count /
                           assignment.total_students) *
-                          100
+                          100,
                       )
                     : 0}
                   %
@@ -310,7 +331,9 @@ const Assignments = () => {
               <IconButton
                 size="sm"
                 onClick={() => {
-                  /* View submissions */
+                  navigate("/app/assignment-submissions", {
+                    state: assignment,
+                  });
                 }}
                 title="View submissions"
               >
@@ -318,9 +341,7 @@ const Assignments = () => {
               </IconButton>
               <IconButton
                 size="sm"
-                onClick={() => {
-                  /* Grade assignments */
-                }}
+                onClick={() => handleGradeAssignment(assignment)}
                 title="Grade assignments"
               >
                 📝
@@ -337,12 +358,15 @@ const Assignments = () => {
         </EmptyState>
       )}
 
+      {/* <GradingModal /> */}
+
       <AssignmentModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onSave={handleAssignmentSave}
         assignment={selectedAssignment}
         grades={grades}
+        subjects={subjects}
       />
     </PageContainer>
   );
