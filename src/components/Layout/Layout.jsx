@@ -92,7 +92,7 @@ const Layout = () => {
         },
         {
           path: "/app/performance-input",
-          label: "Create Report Card",
+          label: "Input Report Comment",
           icon: <FaFileUpload />,
         },
         // { path: "/app/timetable", label: "Timetable", icon: <HiDocumentReport /> },
@@ -163,7 +163,7 @@ const Layout = () => {
         },
         {
           path: "/app/performance-input",
-          label: "Create Report Card",
+          label: "Input Report Comment",
           icon: <FaFileUpload />,
         },
       ],
@@ -236,6 +236,9 @@ const Layout = () => {
     return location.pathname.startsWith(path);
   };
 
+  if (!user) {
+    return navigate("/login");
+  }
   return (
     <>
       <Header>

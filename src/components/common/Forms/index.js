@@ -46,6 +46,13 @@ export const Input = styled.input`
     `}
 `;
 
+export const IconInput = styled.div`
+  diplay: flex;
+  flex: 1;
+  justify-content: space-between;
+  gap: 10px;
+`;
+
 export const TextArea = styled.textarea`
   padding: ${(props) => props.theme.spacing.sm}
     ${(props) => props.theme.spacing.md};
@@ -106,6 +113,15 @@ export const ErrorMessage = styled.span`
   color: ${(props) => props.theme.colors.error};
   font-size: ${(props) => props.theme.typography.small};
   margin-top: ${(props) => props.theme.spacing.xs};
+`;
+
+export const SuccessMessage = styled.span`
+  color: #10b981;
+  font-size: ${(props) => props.theme.typography.small};
+  margin-top: ${(props) => props.theme.spacing.xs};
+  padding: ${(props) => props.theme.spacing.sm} ${(props) => props.theme.spacing.md};
+  background-color: #ecfdf5;
+  border-radius: ${(props) => props.theme.borderRadius.md};
 `;
 
 export const FormRow = styled.div`

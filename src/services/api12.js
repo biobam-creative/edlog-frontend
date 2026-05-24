@@ -3,7 +3,7 @@ import axios from "axios";
 // import jwtDecode from "jwt-decode";
 
 const api = axios.create({
-  baseURL: "http://10.249.111.57:8000/api",
+  baseURL: "http://127.0.0.1:8000/api",
   timeout: 40000,
   headers: {
     Authorization: localStorage.getItem("access_token")
@@ -40,12 +40,11 @@ api.interceptors.response.use(
 
     if (isTokenRefreshError(error, originalRequest)) {
       console.error("Token refresh error:", error.response);
-      // window.location.href = "/login";
+      window.location.href = "/login";
       return Promise.reject(error);
     }
 
     if (isTokenNotValidError(error)) {
-      console.log("access token not valid");
       return handleTokenRefresh(originalRequest);
     }
 
@@ -92,13 +91,11 @@ function isTokenNotValidError(error) {
 
 async function handleTokenRefresh(originalRequest) {
   const refreshToken = localStorage.getItem("refresh_token");
-  console.log(originalRequest.baseURL);
   if (refreshToken) {
     const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]));
     const now = Math.ceil(Date.now() / 1000);
 
     if (tokenParts.exp > now) {
-      console.log(`${originalRequest.baseURL}/token/refresh/`);
       try {
         const response = await axios.post(
           `${originalRequest.baseURL}/token/refresh/`,
@@ -107,7 +104,6 @@ async function handleTokenRefresh(originalRequest) {
           },
         );
 
-        console.log(response);
         localStorage.setItem("access_token", response.data.access);
         localStorage.setItem("refresh_token", response.data.refresh);
 
@@ -121,11 +117,9 @@ async function handleTokenRefresh(originalRequest) {
         window.location.href = "/login";
       }
     } else {
-      console.log("Refresh token is expired", tokenParts.exp, now);
       window.location.href = "/login";
     }
   } else {
-    console.log("Refresh token is not available");
     window.location.href = "/login";
   }
 }

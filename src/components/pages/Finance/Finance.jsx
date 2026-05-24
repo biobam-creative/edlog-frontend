@@ -362,27 +362,31 @@ const Finance = () => {
         </div>
       )}
 
-      <StatsGrid>
-        <FinanceStatCard color="#10b981">
-          <StatValue>{formatCurrency(stats.totalRevenue)}</StatValue>
-          <StatLabel>Total Revenue</StatLabel>
-        </FinanceStatCard>
+      {user?.user_type === "admin" ? (
+        <StatsGrid>
+          <FinanceStatCard color="#10b981">
+            <StatValue>{formatCurrency(stats.totalRevenue)}</StatValue>
+            <StatLabel>Total Revenue</StatLabel>
+          </FinanceStatCard>
 
-        <FinanceStatCard color="#3b82f6">
-          <StatValue>{formatCurrency(stats.collectedAmount)}</StatValue>
-          <StatLabel>Collected</StatLabel>
-        </FinanceStatCard>
+          <FinanceStatCard color="#3b82f6">
+            <StatValue>{formatCurrency(stats.collectedAmount)}</StatValue>
+            <StatLabel>Collected</StatLabel>
+          </FinanceStatCard>
 
-        <FinanceStatCard color="#f59e0b">
-          <StatValue>{formatCurrency(stats.pendingAmount)}</StatValue>
-          <StatLabel>Pending</StatLabel>
-        </FinanceStatCard>
+          <FinanceStatCard color="#f59e0b">
+            <StatValue>{formatCurrency(stats.pendingAmount)}</StatValue>
+            <StatLabel>Pending</StatLabel>
+          </FinanceStatCard>
 
-        <FinanceStatCard color="#ef4444">
-          <StatValue>{formatCurrency(stats.overdueAmount)}</StatValue>
-          <StatLabel>Overdue</StatLabel>
-        </FinanceStatCard>
-      </StatsGrid>
+          <FinanceStatCard color="#ef4444">
+            <StatValue>{formatCurrency(stats.overdueAmount)}</StatValue>
+            <StatLabel>Overdue</StatLabel>
+          </FinanceStatCard>
+        </StatsGrid>
+      ) : (
+        ""
+      )}
 
       <TabsContainer>
         <Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>

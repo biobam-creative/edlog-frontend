@@ -74,6 +74,7 @@ class ScoreService {
     try {
       const response = await api.get(
         `/reports/bulk_report_pdf/${grade}/${term}/`,
+        { responseType: "blob" },
       );
       return response;
     } catch (error) {

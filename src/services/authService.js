@@ -87,6 +87,38 @@ class AuthService {
     }
   }
 
+  // Request password reset
+  async requestPasswordReset(data) {
+    try {
+      const response = await api.post("/auth/password-reset-request/", data);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  // Reset password with token
+  async resetPassword(data) {
+    try {
+      const response = await api.post("/auth/password-reset-confirm/", data);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  // Validate reset token
+  async validateResetToken(token) {
+    try {
+      const response = await api.post("/auth/password-reset-validate/", {
+        token,
+      });
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // Get all users (admin only)
   async getUsers() {
     try {

@@ -342,7 +342,7 @@ const ReportCard = ({ studentId, term }) => {
             <div>
               {" "}
               <QRCodeSVG
-                value={`localhost:5173/verify-result/${reportData.id}`}
+                value={`10.249.111.57:5173/verify-result/${reportData.id}`}
                 size={100}
                 bgColor="#fff"
                 fgColor="#000"

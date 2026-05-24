@@ -183,7 +183,7 @@ const PerformanceInput = () => {
   return (
     <SC.InputFormContainer>
       <SC.FormSection>
-        <SC.FormTitle>Student Performance Input</SC.FormTitle>
+        <SC.FormTitle>Report Card Comments and Psycomotor Input</SC.FormTitle>
 
         {alert && <SC.Alert type={alert.type}>{alert.message}</SC.Alert>}
 

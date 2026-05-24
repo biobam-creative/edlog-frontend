@@ -64,9 +64,15 @@ class StudentsService {
 
   async bulkCreateStudents(studentsData) {
     try {
+      // Override Content-Type header to allow axios to set multipart/form-data with proper boundary
       const response = await api.post(
         "/students/students/bulk-create/",
         studentsData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
       return response.data;
     } catch (error) {

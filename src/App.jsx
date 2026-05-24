@@ -8,6 +8,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Layout from "./components/Layout/Layout";
 import Landing from "./components/pages/Landing/Landing";
 import Login from "./components/pages/Login/Login";
+import ForgotPassword from "./components/pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./components/pages/ResetPassword/ResetPassword";
 import Dashboard from "./components/pages/Dashboard/Dashboard";
 import Students from "./components/pages/Students/Students";
 import Teachers from "./components/pages/Teachers/Teachers";
@@ -38,6 +40,8 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="verify-result/:id" element={<ReportVerify />} />
             <Route path="/app" element={<Layout />}>
               <Route index element={<Dashboard />} />

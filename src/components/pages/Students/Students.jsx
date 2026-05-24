@@ -29,6 +29,7 @@ import {
   Select,
   FormGroup,
   Label,
+  Input,
 } from "../../common";
 import { StudentModal } from "../../Students/StudentModal";
 import { FaPen } from "react-icons/fa";
@@ -47,10 +48,13 @@ const Students = () => {
   const [grades, setGrades] = useState([]);
   const [terms, setTerms] = useState([]);
   const [selectedTerm, setSelectedTerm] = useState("");
-  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [showBulkSubscribeModal, setShowBulkSubscribeModal] = useState(false);
+  const [showBulkStudentAddModal, setShowBulkStudentAddModal] = useState(false);
   const [bulkGrade, setBulkGrade] = useState("");
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkError, setBulkError] = useState("");
+  const [csvFile, setCsvFile] = useState(null);
+  const [bulkAddError, setBulkAddError] = useState("");
 
   useEffect(() => {
     fetchStudents();
@@ -157,6 +161,13 @@ const Students = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCsvFile(file);
+    }
+  };
+
   const getInitials = (name) => {
     return (
       name
@@ -183,11 +194,19 @@ const Students = () => {
           <Heading1>Students Management</Heading1>
         </PageTitle>
         <PageActions>
-          <Button variant="secondary">Export</Button>
           <Button variant="primary" onClick={handleCreateStudent}>
             Add New Student
           </Button>
-          <Button variant="secondary" onClick={() => setShowBulkModal(true)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowBulkStudentAddModal(true)}
+          >
+            Add Bulk Students
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setShowBulkSubscribeModal(true)}
+          >
             Bulk Subscribe
           </Button>
         </PageActions>
@@ -340,7 +359,7 @@ const Students = () => {
         student={selectedStudent}
         grades={grades}
       />
-      {showBulkModal && (
+      {showBulkSubscribeModal && (
         <div
           style={{
             position: "fixed",
@@ -395,7 +414,7 @@ const Students = () => {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setShowBulkModal(false);
+                  setShowBulkSubscribeModal(false);
                   setBulkError("");
                 }}
               >
@@ -417,7 +436,7 @@ const Students = () => {
                     };
                     await studentsService.bulkRenewSubscriptions(payload);
                     alert("Bulk subscription completed");
-                    setShowBulkModal(false);
+                    setShowBulkSubscribeModal(false);
                     fetchStudents();
                   } catch (err) {
                     console.error(err);
@@ -427,6 +446,78 @@ const Students = () => {
                 }}
               >
                 {bulkLoading ? "Processing..." : "Subscribe"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showBulkStudentAddModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: 20,
+              width: 400,
+              borderRadius: 8,
+            }}
+          >
+            <h3>Bulk Add Sttudent</h3>
+            {bulkAddError && <div style={{ color: "red" }}>{bulkAddError}</div>}
+            <div style={{ marginBottom: 8 }}>
+              <Label>Upload CSV file here</Label>
+              <Input
+                type="file"
+                id="logo"
+                name="logo"
+                accept=".csv"
+                onChange={handleFileChange}
+              />
+            </div>
+            <div
+              style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+            >
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowBulkStudentAddModal(false);
+                  setBulkAddError("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={async () => {
+                  if (!csvFile) {
+                    setBulkAddError("Please choose a CSV file to upload");
+                    return;
+                  }
+                  const formData = new FormData();
+                  formData.append("file", csvFile);
+                  setBulkLoading(true);
+                  setBulkAddError("");
+                  try {
+                    await studentsService.bulkCreateStudents(formData);
+                    alert("Bulk students added successfully");
+                    setShowBulkStudentAddModal(false);
+                    fetchStudents();
+                  } catch (err) {
+                    console.error(err);
+                    setBulkAddError(err.error || "Failed to add students");
+                  }
+                  setBulkLoading(false);
+                }}
+              >
+                {bulkLoading ? "Processing..." : "Add"}
               </Button>
             </div>
           </div>

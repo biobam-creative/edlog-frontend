@@ -38,7 +38,7 @@ const SubjectScoresInput = () => {
     if (selectedClass && selectedTerm && selectedSubject) {
       fetchScores();
     }
-  }, [selectedClass, selectedTerm, selectedSubject]);
+  }, [selectedClass, selectedTerm, selectedSubject, setScores]);
 
   const fetchClasses = async () => {
     try {
@@ -105,24 +105,32 @@ const SubjectScoresInput = () => {
         term_id: selectedTerm,
         subject_id: selectedSubject,
       });
-      console.log(response);
       // Update scores with existing data
       if (response.data.length > 0) {
         setScores((prevScores) =>
           prevScores.map((score) => {
             const existing = response.data.find(
-              (s) => s.student === score.student_id,
+              (s) => s.student == score.student_id,
             );
+            console.log(existing);
             if (existing) {
               return {
                 ...score,
-                ca1_score: existing.ca1_score,
-                ca2_score: existing.ca2_score,
-                ca3_score: existing.ca3_score,
-                exam_score: existing.exam_score,
-                class_position: existing.class_position,
+                ca1_score: existing.ca_1,
+                ca2_score: existing.ca_2,
+                ca3_score: existing.ca_3,
+                exam_score: existing.exam,
+              };
+            } else {
+              return {
+                ...score,
+                ca1_score: "",
+                ca2_score: "",
+                ca3_score: "",
+                exam_score: "",
               };
             }
+            console.log("score: ", score);
             return score;
           }),
         );
@@ -204,15 +212,26 @@ const SubjectScoresInput = () => {
         scores: scoresData,
         grade: selectedClass,
       };
-
-      console.log(payload);
       const response = await reportService.bulkCreateScores(payload);
 
-      if (response.data.success) {
+      if (response.status === 201) {
         setAlert({
           type: "success",
-          message: `Successfully saved ${response.data.created_count} scores`,
+          message: `Successfully saved ${response.data.length} scores`,
         });
+        setSelectedSubject("");
+        // setScores((prevScores) =>
+        //   prevScores.map((score) => {
+        //     return {
+        //       ...score,
+        //       ca1_score: "",
+        //       ca2_score: "",
+        //       ca3_score: "",
+        //       exam_score: "",
+        //     };
+        //     return score;
+        //   }),
+        // );
       } else {
         setAlert({ type: "error", message: "Failed to save scores" });
       }
@@ -224,32 +243,6 @@ const SubjectScoresInput = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGeneratePositions = async () => {
-    try {
-      const response = await axios.post(
-        "/api/input/generate-positions/",
-        {
-          class_id: selectedClass,
-          term_id: selectedTerm,
-          subject_id: selectedSubject,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
-      );
-
-      if (response.data.success) {
-        setAlert({ type: "success", message: response.data.message });
-        fetchScores(); // Refresh scores with new positions
-      }
-    } catch (error) {
-      console.error("Failed to generate positions:", error);
-      setAlert({ type: "error", message: "Failed to generate positions" });
     }
   };
 
@@ -328,7 +321,6 @@ const SubjectScoresInput = () => {
                     <th>CA3 (10)</th>
                     <th>Exam (70)</th>
                     <th>Total (100)</th>
-                    <th>Position</th>
                   </tr>
                 </SC.TableHeader>
                 <SC.TableBody>
@@ -405,20 +397,6 @@ const SubjectScoresInput = () => {
                         <td style={{ textAlign: "center", fontWeight: "bold" }}>
                           {total}
                         </td>
-                        <td>
-                          <SC.TableInput
-                            type="number"
-                            min="1"
-                            value={score.class_position}
-                            onChange={(e) =>
-                              handleScoreChange(
-                                index,
-                                "class_position",
-                                e.target.value,
-                              )
-                            }
-                          />
-                        </td>
                       </tr>
                     );
                   })}
@@ -426,17 +404,6 @@ const SubjectScoresInput = () => {
               </SC.InputTable>
 
               <SC.ActionButtons>
-                <SC.FormButton
-                  variant="warning"
-                  onClick={handleGeneratePositions}
-                  disabled={
-                    !scores.some(
-                      (s) => s.ca1_score || s.ca2_score || s.exam_score,
-                    )
-                  }
-                >
-                  Auto Generate Positions
-                </SC.FormButton>
                 <SC.FormButton
                   variant="primary"
                   onClick={handleSaveScores}

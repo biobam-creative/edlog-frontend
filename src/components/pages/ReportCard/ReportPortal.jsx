@@ -8,23 +8,21 @@ const DashboardContainer = styled.div`
   display: flex;
   min-height: 100vh;
   background: #f5f5f5;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+  flex-direction: column;
 `;
 
-const Sidebar = styled.div`
-  width: 280px;
+const FilterSection = styled.div`
+  width: 100%;
   background: #2c3e50;
   color: white;
   padding: 20px;
 
-  @media (max-width: 768px) {
-    width: 100%;
-  }
   @media print {
     display: none;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -130,59 +128,58 @@ const ReportPortal = () => {
 
   return (
     <DashboardContainer>
-      <Sidebar>
+      <FilterSection>
         <DashboardTitle>Report Portal</DashboardTitle>
+        <div style={{ display: "flex", gap: "20px" }}>
+          {user.user_type === "parent" && (
+            <>
+              <div>
+                <label
+                  htmlFor="wards"
+                  style={{ display: "block", marginBottom: "5px" }}
+                >
+                  Select Wards
+                </label>
+                <FilterSelect
+                  id="wards"
+                  value={selectedStudent}
+                  onChange={(e) => setSelectedStudent(e.target.value)}
+                >
+                  <option value="">Select Ward</option>
+                  {students.map((student) => (
+                    <option key={student.id} value={student.user.id}>
+                      {student.user.first_name + " " + student.user.last_name}
+                    </option>
+                  ))}
+                </FilterSelect>
+              </div>
+            </>
+          )}
 
-        {user.user_type === "parent" && (
-          <>
-            <h3 style={{ marginTop: "30px" }}>My Wards</h3>
+          <div>
             <div>
               <label
-                htmlFor="wards"
+                htmlFor="term"
                 style={{ display: "block", marginBottom: "5px" }}
               >
-                Select Wards
+                Term
               </label>
               <FilterSelect
-                id="wards"
-                value={selectedStudent}
-                onChange={(e) => setSelectedStudent(e.target.value)}
+                id="term"
+                value={selectedTerm}
+                onChange={(e) => setSelectedTerm(e.target.value)}
               >
-                <option value="">Select Ward</option>
-                {students.map((student) => (
-                  <option key={student.id} value={student.user.id}>
-                    {student.user.first_name + " " + student.user.last_name}
+                <option value="">Select Term</option>
+                {terms.map((term) => (
+                  <option key={term.id} value={term.id}>
+                    {term.name} {term.academic_year.name}
                   </option>
                 ))}
               </FilterSelect>
             </div>
-          </>
-        )}
-
-        <div style={{ marginTop: "30px" }}>
-          <h4>Report Filter</h4>
-          <div>
-            <label
-              htmlFor="term"
-              style={{ display: "block", marginBottom: "5px" }}
-            >
-              Term
-            </label>
-            <FilterSelect
-              id="term"
-              value={selectedTerm}
-              onChange={(e) => setSelectedTerm(e.target.value)}
-            >
-              <option value="">Select Term</option>
-              {terms.map((term) => (
-                <option key={term.id} value={term.id}>
-                  {term.name} {term.academic_year.name}
-                </option>
-              ))}
-            </FilterSelect>
           </div>
         </div>
-      </Sidebar>
+      </FilterSection>
 
       <MainContent>
         {selectedStudent ? (

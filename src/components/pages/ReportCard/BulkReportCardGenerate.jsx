@@ -92,7 +92,28 @@ const BulkReportCardGenerate = () => {
   const handleBulkReportGeneration = async (grade, term) => {
     setLoading(true);
     try {
-      reportService.bulkReportCardGeneration(grade, term);
+      if (!grade || !term) {
+        alert("Please select both class and term");
+        setLoading(false);
+        return;
+      }
+
+      const response = await reportService.bulkReportCardGeneration(
+        grade,
+        term,
+      );
+
+      // response.data is a Blob thanks to responseType: 'blob'
+      const blob = response.data || response;
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const a = document.createElement("a");
+      a.href = url;
+      const filename = `report_cards_grade_${grade}_term_${term}.pdf`;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching grades:", error);

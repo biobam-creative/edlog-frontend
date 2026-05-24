@@ -28,7 +28,7 @@ const ReportVerify = () => {
     }
   };
   if (loading) {
-    return <div>Verifying Resul.....t</div>;
+    return <div>Verifying Result.....</div>;
   }
   return (
     <PageContainer>
