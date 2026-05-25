@@ -30,6 +30,7 @@ import StudentAssignmentView from "./components/pages/Assignments/StudentAssignm
 import StudentAssignmentList from "./components/pages/Assignments/StudentAssignmentList";
 import BulkReportCardGenerate from "./components/pages/ReportCard/BulkReportCardGenerate";
 import ReportVerify from "./components/pages/ReportCard/ReportVerify";
+import Activities from "./components/pages/Activities/Activities";
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -68,6 +69,7 @@ function App() {
               <Route path="grades" element={<Grades />} />
               <Route path="subjects" element={<Subjects />} />
               <Route path="bulk-report" element={<BulkReportCardGenerate />} />
+              <Route path="activities" element={<Activities />} />
             </Route>
           </Routes>
         </Router>

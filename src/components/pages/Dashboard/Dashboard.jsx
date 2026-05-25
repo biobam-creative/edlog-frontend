@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { dashboardService } from "../../../services";
 import { useAuth } from "../../../contexts/AuthContext";
+import RecentActivities from "./RecentActivities";
 import {
   DashboardHeader,
   WelcomeSection,
@@ -50,55 +51,13 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [statsData, activityData] = await Promise.all([
-        dashboardService.getDashboardStats(),
-        getRecentActivity(), // Mock function for now
-      ]);
+      const statsData = await dashboardService.getDashboardStats();
       setStats(statsData);
-      setRecentActivity(activityData);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
     } finally {
       setLoading(false);
     }
-  };
-
-  // Mock function for recent activity
-  const getRecentActivity = async () => {
-    return [
-      {
-        id: 1,
-        type: "assignment",
-        title: "Mathematics Assignment Submitted",
-        description: "Algebra basics assignment submitted by John Doe",
-        time: "2 hours ago",
-        icon: "📝",
-      },
-      {
-        id: 2,
-        type: "attendance",
-        title: "Attendance Marked",
-        description: "Class 10A attendance marked for today",
-        time: "4 hours ago",
-        icon: "✅",
-      },
-      {
-        id: 3,
-        type: "payment",
-        title: "Fee Payment Received",
-        description: "Monthly fee payment received from Sarah Wilson",
-        time: "1 day ago",
-        icon: "💳",
-      },
-      {
-        id: 4,
-        type: "announcement",
-        title: "New Announcement Published",
-        description: "Sports day schedule announced",
-        time: "2 days ago",
-        icon: "📢",
-      },
-    ];
   };
 
   const getGreeting = () => {
@@ -230,27 +189,11 @@ const Dashboard = () => {
         </StatsGrid>
       ):" "}
 
-      <RecentActivityCard>
-        <CardHeader>
-          <Heading2>Recent Activity</Heading2>
-        </CardHeader>
-        <CardBody>
-          <ActivityList>
-            {recentActivity.map((activity) => (
-              <ActivityItem key={activity.id}>
-                <ActivityIcon>{activity.icon}</ActivityIcon>
-                <ActivityContent>
-                  <ActivityTitle>{activity.title}</ActivityTitle>
-                  <BodyText marginBottom="0" color="#64748b">
-                    {activity.description}
-                  </BodyText>
-                </ActivityContent>
-                <ActivityTime>{activity.time}</ActivityTime>
-              </ActivityItem>
-            ))}
-          </ActivityList>
-        </CardBody>
-      </RecentActivityCard>
+      <RecentActivities 
+        limit={10} 
+        refreshInterval={30000}
+        showViewAll={true}
+      />
     </PageContainer>
   );
 };
